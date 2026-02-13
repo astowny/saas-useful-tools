@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 
 const QuotaDisplay = () => {
@@ -6,14 +6,7 @@ const QuotaDisplay = () => {
   const [quota, setQuota] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    fetchQuota();
-    // Rafraîchir toutes les 30 secondes
-    const interval = setInterval(fetchQuota, 30000);
-    return () => clearInterval(interval);
-  }, []);
-
-  const fetchQuota = async () => {
+  const fetchQuota = useCallback(async () => {
     try {
       const response = await fetch(`${process.env.REACT_APP_API_URL}/api/usage/quota`, {
         headers: {
@@ -30,7 +23,14 @@ const QuotaDisplay = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [token]);
+
+  useEffect(() => {
+    fetchQuota();
+    // Rafraîchir toutes les 30 secondes
+    const interval = setInterval(fetchQuota, 30000);
+    return () => clearInterval(interval);
+  }, [fetchQuota]);
 
   if (loading || !quota) {
     return null;

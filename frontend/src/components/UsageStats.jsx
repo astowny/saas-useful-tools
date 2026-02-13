@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 
 const UsageStats = () => {
@@ -7,11 +7,7 @@ const UsageStats = () => {
   const [period, setPeriod] = useState('month');
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    fetchStats();
-  }, [period]);
-
-  const fetchStats = async () => {
+  const fetchStats = useCallback(async () => {
     setLoading(true);
     try {
       const response = await fetch(
@@ -32,7 +28,11 @@ const UsageStats = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [period, token]);
+
+  useEffect(() => {
+    fetchStats();
+  }, [fetchStats]);
 
   const periodLabels = {
     day: "Aujourd'hui",
