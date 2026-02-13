@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Générateur QR Code - Useful Tools</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrious@4.0.2/dist/qrious.min.js"></script>
+</head>
+<body class="bg-gradient-to-br from-slate-900 to-slate-800 min-h-screen text-white">
+    <!-- Auth check banner -->
+    <div id="auth-banner" class="hidden bg-yellow-600 text-white px-4 py-3 text-center">
+        <p>⚠️ Vous devez être connecté pour utiliser cet outil. <a href="/login" class="underline font-semibold">Se connecter</a></p>
+    </div>
+
+    <!-- Quota warning -->
+    <div id="quota-warning" class="hidden bg-red-600 text-white px-4 py-3 text-center">
+        <p id="quota-message"></p>
+    </div>
+
+    <div class="container mx-auto px-4 py-8 max-w-2xl">
+        <a href="/" class="text-blue-400 hover:text-blue-300 mb-6 inline-block">← Retour</a>
+        
+        <!-- User info -->
+        <div id="user-info" class="hidden mb-4 flex justify-between items-center bg-slate-800 rounded-lg p-3">
+            <span id="user-email" class="text-sm text-gray-300"></span>
+            <span id="quota-display" class="text-xs bg-blue-600 px-3 py-1 rounded-full"></span>
+        </div>
+
+        <h1 class="text-4xl font-bold mb-2">📱 Générateur QR Code</h1>
+        <p class="text-gray-400 mb-8">Génère des QR codes à partir de texte ou URL</p>
+
+        <div id="tool-content" class="hidden">
+            <div class="bg-slate-800 rounded-xl p-6 mb-6">
+                <label class="block text-sm font-medium mb-2">Texte ou URL</label>
+                <textarea 
+                    id="input" 
+                    rows="4" 
+                    class="w-full bg-slate-700 border border-slate-600 rounded-lg p-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="Entrez votre texte ou URL ici..."
+                ></textarea>
+
+                <div class="grid grid-cols-2 gap-4 mt-4">
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Taille (px)</label>
+                        <input type="number" id="size" value="300" min="100" max="1000" 
+                               class="w-full bg-slate-700 border border-slate-600 rounded-lg p-2 text-center">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Couleur</label>
+                        <input type="color" id="color" value="#000000" 
+                               class="w-full h-10 bg-slate-700 border border-slate-600 rounded-lg">
+                    </div>
+                </div>
+
+                <button onclick="generateQR()" 
+                        class="w-full mt-6 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors">
+                    Générer le QR Code
+                </button>
+            </div>
+
+            <div id="result" class="hidden bg-slate-800 rounded-xl p-6">
+                <h3 class="text-lg font-semibold mb-4">Résultat</h3>
+                <div class="flex justify-center mb-4">
+                    <canvas id="qrcode"></canvas>
+                </div>
+                <button onclick="downloadQR()" 
+                        class="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg">
+                    📥 Télécharger
+                </button>
+            </div>
+        </div>
+
+        <div id="loading" class="text-center py-12">
+            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto"></div>
+            <p class="mt-4 text-gray-400">Vérification...</p>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:3001'; // À remplacer par votre URL API
+        const TOOL_NAME = 'qr-generator';
+        const TOOL_CATEGORY = 'utilities';
+        
+        let qr = null;
+        let token = localStorage.getItem('token');
+        let userQuota = null;
+
+        // Vérifier l'authentification au chargement
+        window.addEventListener('DOMContentLoaded', async () => {
+            if (!token) {
+                showAuthBanner();
+                return;
+            }
+
+            try {
+                // Vérifier le token et récupérer les quotas
+                const [userRes, quotaRes] = await Promise.all([
+                    fetch(`${API_URL}/api/auth/me`, {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    }),
+                    fetch(`${API_URL}/api/usage/quota`, {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    })
+                ]);
+
+                if (!userRes.ok) {
+                    localStorage.removeItem('token');
+                    showAuthBanner();
+                    return;
+                }
+
+                const userData = await userRes.json();
+                const quotaData = await quotaRes.json();
+                
+                userQuota = quotaData;
+                showToolContent(userData.user, quotaData);
+            } catch (error) {
+                console.error('Auth error:', error);
+                showAuthBanner();
+            }
+        });
+
+        function showAuthBanner() {
+            document.getElementById('loading').classList.add('hidden');
+            document.getElementById('auth-banner').classList.remove('hidden');
+        }
+
+        function showToolContent(user, quota) {
+            document.getElementById('loading').classList.add('hidden');
+            document.getElementById('tool-content').classList.remove('hidden');
+            document.getElementById('user-info').classList.remove('hidden');
+            document.getElementById('user-email').textContent = user.email;
+            
+            const quotaText = quota.daily.unlimited 
+                ? '∞ Illimité' 
+                : `${quota.daily.remaining}/${quota.daily.limit} restantes aujourd'hui`;
+            document.getElementById('quota-display').textContent = quotaText;
+
+            // Vérifier si quota atteint
+            if (!quota.daily.unlimited && quota.daily.remaining <= 0) {
+                showQuotaWarning('Limite quotidienne atteinte. <a href="/pricing" class="underline">Passez au plan Pro</a>');
+            }
+        }
+
+        function showQuotaWarning(message) {
+            document.getElementById('quota-message').innerHTML = message;
+            document.getElementById('quota-warning').classList.remove('hidden');
+        }
+
+        async function generateQR() {
+            const text = document.getElementById('input').value.trim();
+            if (!text) return alert('Veuillez entrer du texte');
+
+            // Tracker l'usage
+            try {
+                const response = await fetch(`${API_URL}/api/tools/${TOOL_NAME}/use`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ category: TOOL_CATEGORY })
+                });
+
+                if (!response.ok) {
+                    const error = await response.json();
+                    if (error.error.code === 'DAILY_LIMIT_EXCEEDED' || error.error.code === 'MONTHLY_LIMIT_EXCEEDED') {
+                        showQuotaWarning(error.error.message + ' <a href="/pricing" class="underline">Améliorer mon plan</a>');
+                        return;
+                    }
+                    throw new Error(error.error.message);
+                }
+
+                // Générer le QR code
+                const size = parseInt(document.getElementById('size').value);
+                const fgColor = document.getElementById('color').value;
+                const canvas = document.getElementById('qrcode');
+
+                qr = new QRious({
+                    element: canvas,
+                    value: text,
+                    size: size,
+                    foreground: fgColor,
+                    background: '#ffffff',
+                    level: 'M'
+                });
+
+                document.getElementById('result').classList.remove('hidden');
+
+                // Mettre à jour le quota affiché
+                const quotaData = await response.json();
+                if (quotaData.quota) {
+                    const quotaText = quotaData.quota.dailyLimit === -1 
+                        ? '∞ Illimité' 
+                        : `${quotaData.quota.dailyLimit - quotaData.quota.dailyUsed}/${quotaData.quota.dailyLimit} restantes`;
+                    document.getElementById('quota-display').textContent = quotaText;
+                }
+            } catch (error) {
+                alert('Erreur: ' + error.message);
+            }
+        }
+
+        function downloadQR() {
+            const canvas = document.getElementById('qrcode');
+            const link = document.createElement('a');
+            link.download = 'qrcode.png';
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }
+    </script>
+</body>
+</html>
+
