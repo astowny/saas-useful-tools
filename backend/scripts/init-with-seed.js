@@ -1,7 +1,18 @@
+#!/usr/bin/env node
+
+/**
+ * Script d'initialisation de la base de données avec seed personnalisé
+ * Utilisé pour Dokploy avec MINIMA_SEED
+ * 
+ * Usage:
+ *   node scripts/init-with-seed.js
+ *   MINIMA_SEED=your_seed node scripts/init-with-seed.js
+ */
+
 require('dotenv').config();
 const { Pool } = require('pg');
 
-// Support both DATABASE_URL and individual variables (same as database.js)
+// Support both DATABASE_URL and individual variables
 const poolConfig = process.env.DATABASE_URL
   ? {
       connectionString: process.env.DATABASE_URL,
@@ -17,6 +28,11 @@ const poolConfig = process.env.DATABASE_URL
 
 const pool = new Pool(poolConfig);
 
+// Récupérer le seed depuis les variables d'environnement
+const MINIMA_SEED = process.env.MINIMA_SEED || 'default_seed';
+
+console.log('🔐 MINIMA_SEED:', MINIMA_SEED ? '***' + MINIMA_SEED.slice(-4) : 'non défini');
+
 const schema = `
 -- Table des utilisateurs
 CREATE TABLE IF NOT EXISTS users (
@@ -24,6 +40,7 @@ CREATE TABLE IF NOT EXISTS users (
   email VARCHAR(255) UNIQUE NOT NULL,
   password_hash VARCHAR(255) NOT NULL,
   full_name VARCHAR(255),
+  minima_seed VARCHAR(500),
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   email_verified BOOLEAN DEFAULT FALSE,
@@ -52,8 +69,8 @@ CREATE TABLE IF NOT EXISTS user_subscriptions (
   plan_id INTEGER REFERENCES subscription_plans(id),
   stripe_customer_id VARCHAR(255),
   stripe_subscription_id VARCHAR(255),
-  status VARCHAR(50) NOT NULL, -- active, canceled, past_due, trialing
-  billing_cycle VARCHAR(20), -- monthly, yearly
+  status VARCHAR(50) NOT NULL,
+  billing_cycle VARCHAR(20),
   current_period_start TIMESTAMP,
   current_period_end TIMESTAMP,
   cancel_at_period_end BOOLEAN DEFAULT FALSE,
@@ -114,14 +131,17 @@ async function initDatabase() {
   const client = await pool.connect();
   try {
     console.log('🔄 Initialisation de la base de données...');
+    console.log('📍 Environnement:', process.env.NODE_ENV || 'development');
+    console.log('🔗 Connexion:', process.env.DATABASE_URL ? 'DATABASE_URL' : 'Variables séparées');
+    
     await client.query(schema);
     console.log('✅ Schéma créé avec succès');
 
     // Insérer les plans par défaut
     await client.query(`
       INSERT INTO subscription_plans (name, display_name, price_monthly, price_yearly, limits, features)
-      VALUES 
-        ('free', 'Free', 0, 0, 
+      VALUES
+        ('free', 'Free', 0, 0,
          '{"daily_usage": 10, "monthly_usage": 100}',
          '["Accès à tous les outils", "10 utilisations par jour", "Support communautaire"]'),
         ('pro', 'Pro', 9.99, 99.99,
@@ -135,6 +155,7 @@ async function initDatabase() {
     console.log('✅ Plans d\'abonnement insérés');
 
     console.log('🎉 Base de données initialisée avec succès!');
+    console.log('🔐 MINIMA_SEED configuré pour les futurs utilisateurs');
   } catch (error) {
     console.error('❌ Erreur lors de l\'initialisation:', error);
     throw error;
