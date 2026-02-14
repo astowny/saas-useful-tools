@@ -5,6 +5,68 @@ const helmet = require('helmet');
 const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
 
+// ========================================
+// VÉRIFICATION DES VARIABLES D'ENVIRONNEMENT
+// ========================================
+const requiredEnvVars = [
+  'JWT_SECRET',
+  'STRIPE_SECRET_KEY',
+  'FRONTEND_URL'
+];
+
+const optionalEnvVars = [
+  'DATABASE_URL',
+  'DB_HOST',
+  'STRIPE_WEBHOOK_SECRET',
+  'MINIMA_SEED'
+];
+
+console.log('\n🔍 Vérification des variables d\'environnement...\n');
+
+// Vérifier les variables requises
+const missingVars = [];
+requiredEnvVars.forEach(varName => {
+  if (process.env[varName]) {
+    console.log(`✅ ${varName}: ${varName.includes('SECRET') || varName.includes('KEY') ? '***' + (process.env[varName].slice(-4) || '') : process.env[varName]}`);
+  } else {
+    console.log(`❌ ${varName}: NON DÉFINI`);
+    missingVars.push(varName);
+  }
+});
+
+// Afficher les variables optionnelles
+console.log('\n📋 Variables optionnelles:');
+optionalEnvVars.forEach(varName => {
+  if (process.env[varName]) {
+    console.log(`✅ ${varName}: ${varName.includes('SECRET') || varName.includes('SEED') || varName.includes('URL') && varName !== 'FRONTEND_URL' ? '***' + (process.env[varName].slice(-4) || '') : process.env[varName]}`);
+  } else {
+    console.log(`⚠️  ${varName}: non défini`);
+  }
+});
+
+// Vérifier la base de données
+if (process.env.DATABASE_URL) {
+  console.log('\n🔗 Connexion DB: DATABASE_URL (production)');
+} else if (process.env.DB_HOST) {
+  console.log('\n🔗 Connexion DB: Variables séparées (local)');
+} else {
+  console.log('\n❌ ERREUR: Aucune configuration de base de données trouvée!');
+  missingVars.push('DATABASE_URL ou DB_HOST');
+}
+
+console.log(`\n📍 NODE_ENV: ${process.env.NODE_ENV || 'development'}`);
+console.log(`📍 PORT: ${process.env.PORT || 3001}\n`);
+
+// Arrêter si des variables requises manquent
+if (missingVars.length > 0) {
+  console.error('\n❌ ERREUR: Variables d\'environnement manquantes:');
+  missingVars.forEach(v => console.error(`   - ${v}`));
+  console.error('\n💡 Configurez ces variables dans Dokploy/Railway ou dans votre fichier .env\n');
+  process.exit(1);
+}
+
+console.log('✅ Toutes les variables requises sont configurées!\n');
+
 const authRoutes = require('./routes/auth');
 const userRoutes = require('./routes/user');
 const subscriptionRoutes = require('./routes/subscription');
