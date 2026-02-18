@@ -1,6 +1,11 @@
 require('dotenv').config();
 const { Pool } = require('pg');
 
+console.log('\n🔍 DEBUG: Variables d\'environnement');
+console.log('DATABASE_URL:', process.env.DATABASE_URL ? `***${process.env.DATABASE_URL.slice(-30)}` : 'NON DÉFINI');
+console.log('NODE_ENV:', process.env.NODE_ENV || 'NON DÉFINI');
+console.log('DB_HOST:', process.env.DB_HOST || 'NON DÉFINI');
+
 // Support both DATABASE_URL and individual variables (same as database.js)
 const poolConfig = process.env.DATABASE_URL
   ? {
@@ -15,7 +20,22 @@ const poolConfig = process.env.DATABASE_URL
       password: process.env.DB_PASSWORD,
     };
 
+console.log('\n🔧 Configuration de connexion:');
+if (process.env.DATABASE_URL) {
+  console.log('Mode: DATABASE_URL (production)');
+  console.log('SSL:', poolConfig.ssl ? 'Activé' : 'Désactivé');
+} else {
+  console.log('Mode: Variables séparées (local)');
+  console.log('Host:', poolConfig.host);
+  console.log('Port:', poolConfig.port);
+  console.log('Database:', poolConfig.database);
+}
+
 const pool = new Pool(poolConfig);
+
+pool.on('error', (err) => {
+  console.error('❌ Erreur de pool PostgreSQL:', err);
+});
 
 const schema = `
 -- Table des utilisateurs
@@ -111,17 +131,26 @@ CREATE TRIGGER update_user_subscriptions_updated_at BEFORE UPDATE ON user_subscr
 `;
 
 async function initDatabase() {
-  const client = await pool.connect();
+  console.log('\n🔄 Tentative de connexion à la base de données...');
+
+  let client;
   try {
-    console.log('🔄 Initialisation de la base de données...');
+    client = await pool.connect();
+    console.log('✅ Connexion établie avec succès!');
+
+    console.log('\n📋 Étape 1/3: Création du schéma...');
     await client.query(schema);
     console.log('✅ Schéma créé avec succès');
 
-    // Insérer les plans par défaut
-    await client.query(`
+    console.log('\n📋 Étape 2/3: Vérification des plans existants...');
+    const existingPlans = await client.query('SELECT name FROM subscription_plans');
+    console.log(`   Plans existants: ${existingPlans.rows.length > 0 ? existingPlans.rows.map(p => p.name).join(', ') : 'aucun'}`);
+
+    console.log('\n📋 Étape 3/3: Insertion des plans par défaut...');
+    const result = await client.query(`
       INSERT INTO subscription_plans (name, display_name, price_monthly, price_yearly, limits, features)
-      VALUES 
-        ('free', 'Free', 0, 0, 
+      VALUES
+        ('free', 'Free', 0, 0,
          '{"daily_usage": 10, "monthly_usage": 100}',
          '["Accès à tous les outils", "10 utilisations par jour", "Support communautaire"]'),
         ('pro', 'Pro', 9.99, 99.99,
@@ -130,17 +159,36 @@ async function initDatabase() {
         ('enterprise', 'Enterprise', 49.99, 499.99,
          '{"daily_usage": -1, "monthly_usage": -1}',
          '["Tout du plan Pro", "Utilisations illimitées", "Support dédié 24/7", "API access", "White-label", "SLA garanti"]')
-      ON CONFLICT (name) DO NOTHING;
+      ON CONFLICT (name) DO NOTHING
+      RETURNING name;
     `);
-    console.log('✅ Plans d\'abonnement insérés');
 
-    console.log('🎉 Base de données initialisée avec succès!');
+    if (result.rows.length > 0) {
+      console.log(`✅ ${result.rows.length} plan(s) inséré(s): ${result.rows.map(p => p.name).join(', ')}`);
+    } else {
+      console.log('ℹ️  Aucun nouveau plan inséré (déjà existants)');
+    }
+
+    console.log('\n🎉 Base de données initialisée avec succès!');
+    console.log('✅ Toutes les tables sont prêtes\n');
+
   } catch (error) {
-    console.error('❌ Erreur lors de l\'initialisation:', error);
-    throw error;
+    console.error('\n❌ ERREUR lors de l\'initialisation:');
+    console.error('Type:', error.name);
+    console.error('Message:', error.message);
+    console.error('Code:', error.code);
+    if (error.detail) console.error('Détail:', error.detail);
+    if (error.hint) console.error('Hint:', error.hint);
+    console.error('\nStack trace complet:');
+    console.error(error.stack);
+    process.exit(1);
   } finally {
-    client.release();
+    if (client) {
+      console.log('\n🔌 Fermeture de la connexion...');
+      client.release();
+    }
     await pool.end();
+    console.log('✅ Pool fermé\n');
   }
 }
 
