@@ -17,8 +17,7 @@ const requiredEnvVars = [
 const optionalEnvVars = [
   'DATABASE_URL',
   'DB_HOST',
-  'STRIPE_WEBHOOK_SECRET',
-  'MINIMA_SEED'
+  'STRIPE_WEBHOOK_SECRET'
 ];
 
 console.log('\n🔍 Vérification des variables d\'environnement...\n');

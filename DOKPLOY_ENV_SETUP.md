@@ -123,14 +123,6 @@ Valeur : whsec_VOTRE_WEBHOOK_SECRET
    - `invoice.payment_succeeded`
 5. Copiez le "Signing secret" (commence par `whsec_`)
 
-### Variable 7 : MINIMA_SEED
-```
-Nom  : MINIMA_SEED
-Valeur : votre_seed_minima_personnalise
-```
-
-**Important :** Cette variable est utilisée pour stocker le seed Minima des utilisateurs.
-
 ---
 
 ## 🧪 Vérifier que les variables sont bien prises en compte
@@ -181,7 +173,6 @@ Cherchez au démarrage du serveur :
 
 📋 Variables optionnelles:
 ✅ DATABASE_URL: ***5432
-✅ MINIMA_SEED: ***ed42
 
 🔗 Connexion DB: DATABASE_URL (production)
 📍 NODE_ENV: production
@@ -198,10 +189,9 @@ Dans Dokploy → Backend → **Shell** :
 # Vérifier une variable spécifique
 echo $JWT_SECRET
 echo $DATABASE_URL
-echo $MINIMA_SEED
 
 # Vérifier toutes les variables
-env | grep -E "JWT|STRIPE|DATABASE|MINIMA|FRONTEND"
+env | grep -E "JWT|STRIPE|DATABASE|FRONTEND"
 ```
 
 ---
@@ -259,7 +249,6 @@ Avant de démarrer votre application, vérifiez :
 - [ ] `FRONTEND_URL` configuré avec votre domaine
 - [ ] `DATABASE_URL` existe (automatique si PostgreSQL Dokploy)
 - [ ] `STRIPE_WEBHOOK_SECRET` configuré (optionnel au début)
-- [ ] `MINIMA_SEED` configuré (si vous utilisez Minima)
 - [ ] Script `npm run check-env` exécuté avec succès
 - [ ] Logs de démarrage montrent toutes les variables ✅
 

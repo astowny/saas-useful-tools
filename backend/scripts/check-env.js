@@ -28,7 +28,6 @@ const OPTIONAL_VARS = {
   'STRIPE_PRICE_ID_PRO_YEARLY': 'ID du prix Stripe pour Pro annuel',
   'STRIPE_PRICE_ID_ENTERPRISE_MONTHLY': 'ID du prix Stripe pour Enterprise mensuel',
   'STRIPE_PRICE_ID_ENTERPRISE_YEARLY': 'ID du prix Stripe pour Enterprise annuel',
-  'MINIMA_SEED': 'Seed Minima pour les utilisateurs',
   'NODE_ENV': 'Environnement (development/production)',
   'PORT': 'Port du serveur'
 };
