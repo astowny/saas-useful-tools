@@ -8,5 +8,5 @@ cmds = ["cd backend && npm install --only=production"]
 cmds = ["echo 'No build step needed'"]
 
 [start]
-cmd = "cd backend && npm start"
+cmd = "cd backend && npm run init-db && npm start"
 
