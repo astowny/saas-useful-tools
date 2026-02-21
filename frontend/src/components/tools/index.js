@@ -17,6 +17,8 @@ export { default as FaviconGenerator } from './FaviconGenerator';
 export { default as Pomodoro } from './Pomodoro';
 export { default as FreelanceCalculator } from './FreelanceCalculator';
 export { default as MarkdownEditor } from './MarkdownEditor';
+export { default as InvoiceGenerator } from './InvoiceGenerator';
+export { default as QuoteGenerator } from './QuoteGenerator';
 
 // Security
 export { default as HashGenerator } from './HashGenerator';

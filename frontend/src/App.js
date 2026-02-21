@@ -19,6 +19,8 @@ import {
   Pomodoro,
   FreelanceCalculator,
   MarkdownEditor,
+  InvoiceGenerator,
+  QuoteGenerator,
   HashGenerator,
   JwtDecoder,
   DcaCalculator,
@@ -186,8 +188,8 @@ function AppContent() {
         {/* Productivity Tools */}
         <Route path="/tools/pomodoro" element={<ProtectedRoute><Pomodoro /></ProtectedRoute>} />
         <Route path="/tools/freelance-calculator" element={<ProtectedRoute><FreelanceCalculator /></ProtectedRoute>} />
-        <Route path="/tools/invoice-generator" element={<ProtectedRoute><ToolComingSoon icon="🧾" title="Générateur de factures" description="Créer des factures" /></ProtectedRoute>} />
-        <Route path="/tools/quote-generator" element={<ProtectedRoute><ToolComingSoon icon="📋" title="Générateur de devis" description="Créer des devis" /></ProtectedRoute>} />
+        <Route path="/tools/invoice-generator" element={<ProtectedRoute><InvoiceGenerator /></ProtectedRoute>} />
+        <Route path="/tools/quote-generator" element={<ProtectedRoute><QuoteGenerator /></ProtectedRoute>} />
         <Route path="/tools/kanban" element={<ProtectedRoute><ToolComingSoon icon="📊" title="Kanban Board" description="Gestion de tâches" /></ProtectedRoute>} />
         <Route path="/tools/markdown-editor" element={<ProtectedRoute><MarkdownEditor /></ProtectedRoute>} />
 
