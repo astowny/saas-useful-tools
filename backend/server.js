@@ -91,20 +91,39 @@ app.use('/api/', limiter);
 app.use('/api/webhooks/stripe', express.raw({ type: 'application/json' }), stripeWebhookRoutes);
 
 // CORS - Support multiple origins separated by comma
+// Security: In production, FRONTEND_URL must be explicitly set
+if (!process.env.FRONTEND_URL && process.env.NODE_ENV === 'production') {
+  console.error('❌ SECURITY ERROR: FRONTEND_URL must be set in production!');
+  process.exit(1);
+}
+
 const allowedOrigins = (process.env.FRONTEND_URL || 'http://localhost:3000')
   .split(',')
-  .map(origin => origin.trim());
+  .map(origin => origin.trim())
+  .filter(origin => {
+    // In production, block localhost origins
+    if (process.env.NODE_ENV === 'production' && origin.includes('localhost')) {
+      console.warn(`⚠️  WARNING: Ignoring localhost origin in production: ${origin}`);
+      return false;
+    }
+    return true;
+  });
 
 console.log('🔒 CORS Configuration:');
+console.log('   Environment:', process.env.NODE_ENV || 'development');
 console.log('   Allowed origins:', allowedOrigins);
 
 app.use(cors({
   origin: function (origin, callback) {
     console.log(`📨 CORS request from origin: ${origin}`);
-    
-    // Allow requests with no origin (like mobile apps or curl requests)
+
+    // In production, reject requests with no origin for security
     if (!origin) {
-      console.log('   ✅ Allowed (no origin)');
+      if (process.env.NODE_ENV === 'production') {
+        console.log('   ❌ BLOCKED - No origin in production');
+        return callback(new Error('Not allowed by CORS - No origin'));
+      }
+      console.log('   ✅ Allowed (no origin - development mode)');
       return callback(null, true);
     }
 

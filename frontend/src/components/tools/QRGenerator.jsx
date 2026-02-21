@@ -28,7 +28,7 @@ const QRGenerator = () => {
 
     if (window.QRious) {
       const canvas = document.createElement('canvas');
-      const qr = new window.QRious({
+      new window.QRious({
         element: canvas,
         value: text,
         size: size,

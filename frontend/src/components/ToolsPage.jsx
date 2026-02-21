@@ -1,37 +1,38 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 const ToolsPage = () => {
   const tools = {
     utilities: [
-      { name: "Générateur QR Code", icon: "📱", desc: "Génère des QR codes", file: "qr-generator.html" },
-      { name: "JSON ↔ CSV", icon: "🔄", desc: "Convertit entre formats", file: "json-csv.html" },
-      { name: "Générateur de mots de passe", icon: "🔑", desc: "Mots de passe sécurisés", file: "password-generator.html" },
-      { name: "Base64 Encoder/Decoder", icon: "🔤", desc: "Encode/décode Base64", file: "base64.html" },
-      { name: "Diff de texte", icon: "📝", desc: "Compare deux textes", file: "text-diff.html" },
-      { name: "Minifieur CSS/JS", icon: "📦", desc: "Compresse le code", file: "minifier.html" }
+      { name: "Générateur QR Code", icon: "📱", desc: "Génère des QR codes", route: "/tools/qr-generator" },
+      { name: "JSON ↔ CSV", icon: "🔄", desc: "Convertit entre formats", route: "/tools/json-csv" },
+      { name: "Générateur de mots de passe", icon: "🔑", desc: "Mots de passe sécurisés", route: "/tools/password-generator" },
+      { name: "Base64 Encoder/Decoder", icon: "🔤", desc: "Encode/décode Base64", route: "/tools/base64" },
+      { name: "Diff de texte", icon: "📝", desc: "Compare deux textes", route: "/tools/text-diff" },
+      { name: "Minifieur CSS/JS", icon: "📦", desc: "Compresse le code", route: "/tools/minifier" }
     ],
     design: [
-      { name: "Générateur de palettes", icon: "🎨", desc: "Palettes de couleurs", file: "color-palette.html" },
-      { name: "Convertisseur couleurs", icon: "🌈", desc: "RGB, HEX, HSL...", file: "color-converter.html" },
-      { name: "Générateur gradients", icon: "🌅", desc: "Dégradés CSS", file: "gradient-generator.html" },
-      { name: "Box-shadow Generator", icon: "📦", desc: "Ombres CSS", file: "box-shadow.html" },
-      { name: "Favicon Generator", icon: "🖼️", desc: "Créer des favicons", file: "favicon-generator.html" }
+      { name: "Générateur de palettes", icon: "🎨", desc: "Palettes de couleurs", route: "/tools/color-palette" },
+      { name: "Convertisseur couleurs", icon: "🌈", desc: "RGB, HEX, HSL...", route: "/tools/color-converter" },
+      { name: "Générateur gradients", icon: "🌅", desc: "Dégradés CSS", route: "/tools/gradient-generator" },
+      { name: "Box-shadow Generator", icon: "📦", desc: "Ombres CSS", route: "/tools/box-shadow" },
+      { name: "Favicon Generator", icon: "🖼️", desc: "Créer des favicons", route: "/tools/favicon-generator" }
     ],
     productivity: [
-      { name: "Pomodoro Timer", icon: "⏱️", desc: "Gestion du temps", file: "pomodoro.html" },
-      { name: "Calculateur Freelance", icon: "💰", desc: "Tarifs freelance", file: "freelance-calculator.html" },
-      { name: "Générateur de factures", icon: "🧾", desc: "Créer des factures", file: "invoice-generator.html" },
-      { name: "Générateur de devis", icon: "📋", desc: "Créer des devis", file: "quote-generator.html" },
-      { name: "Kanban Board", icon: "📊", desc: "Gestion de tâches", file: "kanban.html" },
-      { name: "Markdown Editor", icon: "✍️", desc: "Éditeur Markdown", file: "markdown-editor.html" }
+      { name: "Pomodoro Timer", icon: "⏱️", desc: "Gestion du temps", route: "/tools/pomodoro" },
+      { name: "Calculateur Freelance", icon: "💰", desc: "Tarifs freelance", route: "/tools/freelance-calculator" },
+      { name: "Générateur de factures", icon: "🧾", desc: "Créer des factures", route: "/tools/invoice-generator" },
+      { name: "Générateur de devis", icon: "📋", desc: "Créer des devis", route: "/tools/quote-generator" },
+      { name: "Kanban Board", icon: "📊", desc: "Gestion de tâches", route: "/tools/kanban" },
+      { name: "Markdown Editor", icon: "✍️", desc: "Éditeur Markdown", route: "/tools/markdown-editor" }
     ],
     security: [
-      { name: "Hash Generator", icon: "🔐", desc: "MD5, SHA-256...", file: "hash-generator.html" },
-      { name: "JWT Decoder", icon: "🔓", desc: "Décoder les JWT", file: "jwt-decoder.html" }
+      { name: "Hash Generator", icon: "🔐", desc: "MD5, SHA-256...", route: "/tools/hash-generator" },
+      { name: "JWT Decoder", icon: "🔓", desc: "Décoder les JWT", route: "/tools/jwt-decoder" }
     ],
     finance: [
-      { name: "Calculateur DCA", icon: "📈", desc: "Dollar Cost Averaging", file: "dca-calculator.html" },
-      { name: "Impermanent Loss", icon: "💸", desc: "Calcul de perte", file: "impermanent-loss.html" }
+      { name: "Calculateur DCA", icon: "📈", desc: "Dollar Cost Averaging", route: "/tools/dca-calculator" },
+      { name: "Impermanent Loss", icon: "💸", desc: "Calcul de perte", route: "/tools/impermanent-loss" }
     ]
   };
 
@@ -64,9 +65,9 @@ const ToolsPage = () => {
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {tools[category.id].map((tool, index) => (
-                <a
+                <Link
                   key={index}
-                  href={`/tools/${tool.file}`}
+                  to={tool.route}
                   className="block p-6 bg-white rounded-xl border border-gray-200 hover:border-blue-500 hover:shadow-lg transition-all group"
                 >
                   <div className="text-4xl mb-3">{tool.icon}</div>
@@ -74,7 +75,7 @@ const ToolsPage = () => {
                     {tool.name}
                   </h3>
                   <p className="text-gray-600 text-sm">{tool.desc}</p>
-                </a>
+                </Link>
               ))}
             </div>
           </div>

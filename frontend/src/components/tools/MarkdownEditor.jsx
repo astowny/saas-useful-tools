@@ -28,7 +28,7 @@ const MarkdownEditor = () => {
     html = html.replace(/\[(.*?)\]\((.*?)\)/gim, '<a href="$2" class="text-blue-600 hover:underline">$1</a>');
     
     // Lists
-    html = html.replace(/^\- (.*$)/gim, '<li class="ml-4">$1</li>');
+    html = html.replace(/^- (.*$)/gim, '<li class="ml-4">$1</li>');
     html = html.replace(/(<li.*<\/li>)/s, '<ul class="list-disc list-inside my-2">$1</ul>');
     
     // Line breaks

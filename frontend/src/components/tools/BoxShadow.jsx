@@ -6,7 +6,6 @@ const BoxShadow = () => {
   const [vertical, setVertical] = useState(4);
   const [blur, setBlur] = useState(6);
   const [spread, setSpread] = useState(0);
-  const [color, setColor] = useState('#000000');
   const [opacity, setOpacity] = useState(0.1);
   const [inset, setInset] = useState(false);
 
