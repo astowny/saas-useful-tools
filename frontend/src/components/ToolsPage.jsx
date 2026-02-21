@@ -1,0 +1,99 @@
+import React from 'react';
+
+const ToolsPage = () => {
+  const tools = {
+    utilities: [
+      { name: "Générateur QR Code", icon: "📱", desc: "Génère des QR codes", file: "qr-generator.html" },
+      { name: "JSON ↔ CSV", icon: "🔄", desc: "Convertit entre formats", file: "json-csv.html" },
+      { name: "Générateur de mots de passe", icon: "🔑", desc: "Mots de passe sécurisés", file: "password-generator.html" },
+      { name: "Base64 Encoder/Decoder", icon: "🔤", desc: "Encode/décode Base64", file: "base64.html" },
+      { name: "Diff de texte", icon: "📝", desc: "Compare deux textes", file: "text-diff.html" },
+      { name: "Minifieur CSS/JS", icon: "📦", desc: "Compresse le code", file: "minifier.html" }
+    ],
+    design: [
+      { name: "Générateur de palettes", icon: "🎨", desc: "Palettes de couleurs", file: "color-palette.html" },
+      { name: "Convertisseur couleurs", icon: "🌈", desc: "RGB, HEX, HSL...", file: "color-converter.html" },
+      { name: "Générateur gradients", icon: "🌅", desc: "Dégradés CSS", file: "gradient-generator.html" },
+      { name: "Box-shadow Generator", icon: "📦", desc: "Ombres CSS", file: "box-shadow.html" },
+      { name: "Favicon Generator", icon: "🖼️", desc: "Créer des favicons", file: "favicon-generator.html" }
+    ],
+    productivity: [
+      { name: "Pomodoro Timer", icon: "⏱️", desc: "Gestion du temps", file: "pomodoro.html" },
+      { name: "Calculateur Freelance", icon: "💰", desc: "Tarifs freelance", file: "freelance-calculator.html" },
+      { name: "Générateur de factures", icon: "🧾", desc: "Créer des factures", file: "invoice-generator.html" },
+      { name: "Générateur de devis", icon: "📋", desc: "Créer des devis", file: "quote-generator.html" },
+      { name: "Kanban Board", icon: "📊", desc: "Gestion de tâches", file: "kanban.html" },
+      { name: "Markdown Editor", icon: "✍️", desc: "Éditeur Markdown", file: "markdown-editor.html" }
+    ],
+    security: [
+      { name: "Hash Generator", icon: "🔐", desc: "MD5, SHA-256...", file: "hash-generator.html" },
+      { name: "JWT Decoder", icon: "🔓", desc: "Décoder les JWT", file: "jwt-decoder.html" }
+    ],
+    finance: [
+      { name: "Calculateur DCA", icon: "📈", desc: "Dollar Cost Averaging", file: "dca-calculator.html" },
+      { name: "Impermanent Loss", icon: "💸", desc: "Calcul de perte", file: "impermanent-loss.html" }
+    ]
+  };
+
+  const categories = [
+    { id: 'utilities', name: '🛠️ Utilitaires', color: 'blue' },
+    { id: 'design', name: '🎨 Design', color: 'purple' },
+    { id: 'productivity', name: '⚡ Productivité', color: 'green' },
+    { id: 'security', name: '🔒 Sécurité', color: 'red' },
+    { id: 'finance', name: '💰 Finance', color: 'yellow' }
+  ];
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <div className="container mx-auto px-4 py-8">
+        {/* Header */}
+        <div className="text-center mb-12">
+          <h1 className="text-4xl font-bold text-gray-900 mb-4">
+            🧰 Boîte à outils
+          </h1>
+          <p className="text-xl text-gray-600">
+            Tous les outils dont vous avez besoin, au même endroit
+          </p>
+        </div>
+
+        {/* Tools by category */}
+        {categories.map(category => (
+          <div key={category.id} className="mb-12">
+            <h2 className="text-2xl font-bold text-gray-900 mb-6">
+              {category.name}
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {tools[category.id].map((tool, index) => (
+                <a
+                  key={index}
+                  href={`/tools/${tool.file}`}
+                  className="block p-6 bg-white rounded-xl border border-gray-200 hover:border-blue-500 hover:shadow-lg transition-all group"
+                >
+                  <div className="text-4xl mb-3">{tool.icon}</div>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-1 group-hover:text-blue-600 transition-colors">
+                    {tool.name}
+                  </h3>
+                  <p className="text-gray-600 text-sm">{tool.desc}</p>
+                </a>
+              ))}
+            </div>
+          </div>
+        ))}
+
+        {/* Info box */}
+        <div className="mt-12 p-6 bg-blue-50 border border-blue-200 rounded-xl">
+          <h3 className="text-lg font-semibold text-blue-900 mb-2">
+            💡 Astuce
+          </h3>
+          <p className="text-blue-800">
+            Tous les outils sont gratuits et fonctionnent directement dans votre navigateur. 
+            Vos données restent privées et ne sont jamais envoyées à nos serveurs.
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default ToolsPage;
+

@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate, Link } from 'react-ro
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import Dashboard from './components/Dashboard';
 import PricingPage from './components/PricingPage';
+import ToolsPage from './components/ToolsPage';
 import './App.css';
 
 // Composant de connexion
@@ -105,6 +106,7 @@ function Navigation() {
         <Link to="/dashboard" className="nav-brand">🛠️ Useful Tools</Link>
         <div className="nav-links">
           <Link to="/dashboard">Dashboard</Link>
+          <Link to="/tools">Outils</Link>
           <Link to="/pricing">Pricing</Link>
           <span className="user-info">{user?.email}</span>
           <button onClick={logout} className="btn-logout">Déconnexion</button>
@@ -137,6 +139,11 @@ function AppContent() {
         <Route path="/dashboard" element={
           <ProtectedRoute>
             <Dashboard />
+          </ProtectedRoute>
+        } />
+        <Route path="/tools" element={
+          <ProtectedRoute>
+            <ToolsPage />
           </ProtectedRoute>
         } />
         <Route path="/pricing" element={
