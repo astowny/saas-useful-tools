@@ -4,6 +4,27 @@ import { AuthProvider, useAuth } from './contexts/AuthContext';
 import Dashboard from './components/Dashboard';
 import PricingPage from './components/PricingPage';
 import ToolsPage from './components/ToolsPage';
+import {
+  QRGenerator,
+  JsonCsvConverter,
+  PasswordGenerator,
+  Base64Tool,
+  TextDiff,
+  Minifier,
+  ColorPalette,
+  ColorConverter,
+  GradientGenerator,
+  BoxShadow,
+  FaviconGenerator,
+  Pomodoro,
+  FreelanceCalculator,
+  MarkdownEditor,
+  HashGenerator,
+  JwtDecoder,
+  DcaCalculator,
+  ImpermanentLoss,
+  ToolComingSoon
+} from './components/tools';
 import './App.css';
 
 // Composant de connexion
@@ -146,6 +167,38 @@ function AppContent() {
             <ToolsPage />
           </ProtectedRoute>
         } />
+
+        {/* Utilities Tools */}
+        <Route path="/tools/qr-generator" element={<ProtectedRoute><QRGenerator /></ProtectedRoute>} />
+        <Route path="/tools/json-csv" element={<ProtectedRoute><JsonCsvConverter /></ProtectedRoute>} />
+        <Route path="/tools/password-generator" element={<ProtectedRoute><PasswordGenerator /></ProtectedRoute>} />
+        <Route path="/tools/base64" element={<ProtectedRoute><Base64Tool /></ProtectedRoute>} />
+        <Route path="/tools/text-diff" element={<ProtectedRoute><TextDiff /></ProtectedRoute>} />
+        <Route path="/tools/minifier" element={<ProtectedRoute><Minifier /></ProtectedRoute>} />
+
+        {/* Design Tools */}
+        <Route path="/tools/color-palette" element={<ProtectedRoute><ColorPalette /></ProtectedRoute>} />
+        <Route path="/tools/color-converter" element={<ProtectedRoute><ColorConverter /></ProtectedRoute>} />
+        <Route path="/tools/gradient-generator" element={<ProtectedRoute><GradientGenerator /></ProtectedRoute>} />
+        <Route path="/tools/box-shadow" element={<ProtectedRoute><BoxShadow /></ProtectedRoute>} />
+        <Route path="/tools/favicon-generator" element={<ProtectedRoute><FaviconGenerator /></ProtectedRoute>} />
+
+        {/* Productivity Tools */}
+        <Route path="/tools/pomodoro" element={<ProtectedRoute><Pomodoro /></ProtectedRoute>} />
+        <Route path="/tools/freelance-calculator" element={<ProtectedRoute><FreelanceCalculator /></ProtectedRoute>} />
+        <Route path="/tools/invoice-generator" element={<ProtectedRoute><ToolComingSoon icon="🧾" title="Générateur de factures" description="Créer des factures" /></ProtectedRoute>} />
+        <Route path="/tools/quote-generator" element={<ProtectedRoute><ToolComingSoon icon="📋" title="Générateur de devis" description="Créer des devis" /></ProtectedRoute>} />
+        <Route path="/tools/kanban" element={<ProtectedRoute><ToolComingSoon icon="📊" title="Kanban Board" description="Gestion de tâches" /></ProtectedRoute>} />
+        <Route path="/tools/markdown-editor" element={<ProtectedRoute><MarkdownEditor /></ProtectedRoute>} />
+
+        {/* Security Tools */}
+        <Route path="/tools/hash-generator" element={<ProtectedRoute><HashGenerator /></ProtectedRoute>} />
+        <Route path="/tools/jwt-decoder" element={<ProtectedRoute><JwtDecoder /></ProtectedRoute>} />
+
+        {/* Finance Tools */}
+        <Route path="/tools/dca-calculator" element={<ProtectedRoute><DcaCalculator /></ProtectedRoute>} />
+        <Route path="/tools/impermanent-loss" element={<ProtectedRoute><ImpermanentLoss /></ProtectedRoute>} />
+
         <Route path="/pricing" element={
           <ProtectedRoute>
             <PricingPage />

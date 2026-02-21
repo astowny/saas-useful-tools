@@ -1,0 +1,136 @@
+import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
+
+const FreelanceCalculator = () => {
+  const [desiredSalary, setDesiredSalary] = useState(50000);
+  const [workingDays, setWorkingDays] = useState(218);
+  const [expenses, setExpenses] = useState(5000);
+  const [profitMargin, setProfitMargin] = useState(20);
+
+  const calculateRates = () => {
+    const totalNeeded = desiredSalary + expenses;
+    const withMargin = totalNeeded * (1 + profitMargin / 100);
+    const dailyRate = withMargin / workingDays;
+    const hourlyRate = dailyRate / 7; // 7 heures par jour
+
+    return {
+      daily: Math.round(dailyRate),
+      hourly: Math.round(hourlyRate),
+      monthly: Math.round(withMargin / 12),
+      yearly: Math.round(withMargin)
+    };
+  };
+
+  const rates = calculateRates();
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <div className="container mx-auto px-4 py-8 max-w-4xl">
+        <Link to="/tools" className="text-blue-600 hover:text-blue-700 mb-6 inline-flex items-center gap-2">
+          ← Retour aux outils
+        </Link>
+        
+        <div className="mb-8">
+          <h1 className="text-4xl font-bold text-gray-900 mb-2">💰 Calculateur Freelance</h1>
+          <p className="text-gray-600">Calculez vos tarifs journaliers et horaires</p>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <h2 className="text-xl font-semibold text-gray-900 mb-6">Paramètres</h2>
+            
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Salaire net souhaité (€/an)
+                </label>
+                <input
+                  type="number"
+                  value={desiredSalary}
+                  onChange={(e) => setDesiredSalary(parseInt(e.target.value) || 0)}
+                  className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Jours travaillés par an
+                </label>
+                <input
+                  type="number"
+                  value={workingDays}
+                  onChange={(e) => setWorkingDays(parseInt(e.target.value) || 0)}
+                  className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+                <p className="text-xs text-gray-500 mt-1">~218 jours (365 - weekends - congés - jours fériés)</p>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Charges annuelles (€)
+                </label>
+                <input
+                  type="number"
+                  value={expenses}
+                  onChange={(e) => setExpenses(parseInt(e.target.value) || 0)}
+                  className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+                <p className="text-xs text-gray-500 mt-1">Assurances, comptable, matériel, etc.</p>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Marge de sécurité ({profitMargin}%)
+                </label>
+                <input
+                  type="range"
+                  min="0"
+                  max="50"
+                  value={profitMargin}
+                  onChange={(e) => setProfitMargin(parseInt(e.target.value))}
+                  className="w-full"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <h2 className="text-xl font-semibold text-gray-900 mb-6">Vos tarifs recommandés</h2>
+            
+            <div className="space-y-4">
+              <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                <div className="text-sm text-blue-700 mb-1">Tarif journalier (TJM)</div>
+                <div className="text-3xl font-bold text-blue-900">{rates.daily} €</div>
+              </div>
+
+              <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
+                <div className="text-sm text-green-700 mb-1">Tarif horaire</div>
+                <div className="text-3xl font-bold text-green-900">{rates.hourly} €</div>
+              </div>
+
+              <div className="p-4 bg-purple-50 border border-purple-200 rounded-lg">
+                <div className="text-sm text-purple-700 mb-1">Revenu mensuel moyen</div>
+                <div className="text-3xl font-bold text-purple-900">{rates.monthly} €</div>
+              </div>
+
+              <div className="p-4 bg-orange-50 border border-orange-200 rounded-lg">
+                <div className="text-sm text-orange-700 mb-1">Chiffre d'affaires annuel</div>
+                <div className="text-3xl font-bold text-orange-900">{rates.yearly} €</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-6 bg-yellow-50 border border-yellow-200 rounded-xl p-6">
+          <h3 className="font-semibold text-yellow-900 mb-2">⚠️ Important</h3>
+          <p className="text-sm text-yellow-800">
+            Ces calculs sont indicatifs. Pensez à consulter un comptable pour des estimations précises incluant les charges sociales et fiscales.
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default FreelanceCalculator;
+
