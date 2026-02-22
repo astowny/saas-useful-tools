@@ -321,7 +321,6 @@ const InvoiceGenerator = () => {
             <div className="bg-gray-50 rounded-lg p-4 mb-6">
               <h3 className="text-sm font-semibold text-gray-900 mb-3">📌 Notes & Mentions</h3>
               <textarea
-                ref={notesRef}
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
                 placeholder="Notes, conditions de paiement, mentions légales..."
