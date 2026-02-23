@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useQuota } from '../../hooks/useQuota';
 
 const InvoiceGenerator = () => {
+  const { t, i18n } = useTranslation();
   const { checkAndUseQuota, isChecking, quotaError } = useQuota();
 
   // Informations entreprise
@@ -116,12 +118,12 @@ const InvoiceGenerator = () => {
     <div className="min-h-screen bg-gray-50">
       <div className="container mx-auto px-4 py-8 max-w-6xl">
         <Link to="/tools" className="text-blue-600 hover:text-blue-700 mb-6 inline-flex items-center gap-2 no-print">
-          ← Retour aux outils
+          {t('common.backToTools')}
         </Link>
 
         <div className="mb-8 no-print">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">🧾 Générateur de Factures</h1>
-          <p className="text-gray-600">Créez des factures professionnelles en quelques clics</p>
+          <h1 className="text-4xl font-bold text-gray-900 mb-2">{t('toolPages.invoice.title')}</h1>
+          <p className="text-gray-600">{t('toolPages.invoice.subtitle')}</p>
         </div>
 
         {/* Affichage des erreurs de quota */}
@@ -130,11 +132,11 @@ const InvoiceGenerator = () => {
             <div className="flex items-start gap-3">
               <span className="text-2xl">⛔</span>
               <div className="flex-1">
-                <h3 className="font-semibold text-red-900 mb-1">Limite atteinte</h3>
+                <h3 className="font-semibold text-red-900 mb-1">{t('common.limitReached')}</h3>
                 <p className="text-sm text-red-800">{quotaError.message}</p>
                 {quotaError.type === 'NO_SUBSCRIPTION' && (
                   <Link to="/pricing" className="inline-block mt-2 text-sm font-semibold text-red-700 underline hover:text-red-600">
-                    Voir les plans disponibles →
+                    {t('common.viewPlans')}
                   </Link>
                 )}
               </div>
@@ -147,25 +149,25 @@ const InvoiceGenerator = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
               {/* Informations entreprise */}
               <div className="bg-gray-50 rounded-lg p-4">
-                <h3 className="text-sm font-semibold text-gray-900 mb-3">👤 Émetteur</h3>
+                <h3 className="text-sm font-semibold text-gray-900 mb-3">{t('toolPages.invoice.emitterTitle')}</h3>
                 <div className="space-y-2">
                   <input
                     type="text"
-                    placeholder="Nom de l'entreprise"
+                    placeholder={t('toolPages.invoice.companyPlaceholder')}
                     value={companyName}
                     onChange={(e) => setCompanyName(e.target.value)}
                     className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                   <input
                     type="text"
-                    placeholder="Adresse"
+                    placeholder={t('toolPages.invoice.addressPlaceholder')}
                     value={companyAddress}
                     onChange={(e) => setCompanyAddress(e.target.value)}
                     className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                   <input
                     type="text"
-                    placeholder="SIRET"
+                    placeholder={t('toolPages.invoice.siretPlaceholder')}
                     value={companySiret}
                     onChange={(e) => setCompanySiret(e.target.value)}
                     className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -175,25 +177,25 @@ const InvoiceGenerator = () => {
 
               {/* Informations client */}
               <div className="bg-gray-50 rounded-lg p-4">
-                <h3 className="text-sm font-semibold text-gray-900 mb-3">🏢 Client</h3>
+                <h3 className="text-sm font-semibold text-gray-900 mb-3">{t('toolPages.invoice.clientTitle')}</h3>
                 <div className="space-y-2">
                   <input
                     type="text"
-                    placeholder="Nom du client"
+                    placeholder={t('toolPages.invoice.clientNamePlaceholder')}
                     value={clientName}
                     onChange={(e) => setClientName(e.target.value)}
                     className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                   <input
                     type="text"
-                    placeholder="Adresse client"
+                    placeholder={t('toolPages.invoice.clientAddressPlaceholder')}
                     value={clientAddress}
                     onChange={(e) => setClientAddress(e.target.value)}
                     className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                   <input
                     type="text"
-                    placeholder="SIRET client"
+                    placeholder={t('toolPages.invoice.clientSiretPlaceholder')}
                     value={clientSiret}
                     onChange={(e) => setClientSiret(e.target.value)}
                     className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -203,11 +205,11 @@ const InvoiceGenerator = () => {
 
               {/* Informations facture */}
               <div className="bg-gray-50 rounded-lg p-4">
-                <h3 className="text-sm font-semibold text-gray-900 mb-3">📄 Facture</h3>
+                <h3 className="text-sm font-semibold text-gray-900 mb-3">{t('toolPages.invoice.invoiceInfoTitle')}</h3>
                 <div className="space-y-2">
                   <input
                     type="text"
-                    placeholder="N° Facture"
+                    placeholder={t('toolPages.invoice.invoiceNumberPlaceholder')}
                     value={invoiceNumber}
                     onChange={(e) => setInvoiceNumber(e.target.value)}
                     className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -229,17 +231,17 @@ const InvoiceGenerator = () => {
                     onChange={(e) => setTvaRate(parseFloat(e.target.value))}
                     className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                   >
-                    <option value="0">TVA 0% (Non applicable)</option>
-                    <option value="5.5">TVA 5.5%</option>
-                    <option value="10">TVA 10%</option>
-                    <option value="20">TVA 20%</option>
+                    <option value="0">{t('toolPages.invoice.tvaOptions.zero')}</option>
+                    <option value="5.5">{t('toolPages.invoice.tvaOptions.five')}</option>
+                    <option value="10">{t('toolPages.invoice.tvaOptions.ten')}</option>
+                    <option value="20">{t('toolPages.invoice.tvaOptions.twenty')}</option>
                   </select>
                 </div>
               </div>
 
               {/* Coordonnées bancaires */}
               <div className="bg-gray-50 rounded-lg p-4">
-                <h3 className="text-sm font-semibold text-gray-900 mb-3">🏦 Coordonnées bancaires</h3>
+                <h3 className="text-sm font-semibold text-gray-900 mb-3">{t('toolPages.invoice.bankTitle')}</h3>
                 <div className="space-y-2">
                   <label className="flex items-center gap-2 text-sm cursor-pointer">
                     <input
@@ -248,7 +250,7 @@ const InvoiceGenerator = () => {
                       onChange={(e) => setShowBank(e.target.checked)}
                       className="rounded"
                     />
-                    <span>Afficher sur la facture</span>
+                    <span>{t('toolPages.invoice.showOnInvoice')}</span>
                   </label>
                   <input
                     type="text"
@@ -270,20 +272,20 @@ const InvoiceGenerator = () => {
 
             {/* Lignes de facture */}
             <div className="bg-gray-50 rounded-lg p-4 mb-6">
-              <h3 className="text-sm font-semibold text-gray-900 mb-3">📝 Lignes de facturation</h3>
+              <h3 className="text-sm font-semibold text-gray-900 mb-3">{t('toolPages.invoice.billingLinesTitle')}</h3>
               <div className="space-y-2">
                 {items.map((item, index) => (
                   <div key={index} className="flex gap-2 items-center">
                     <input
                       type="text"
-                      placeholder="Description"
+                      placeholder={t('toolPages.invoice.descriptionPlaceholder')}
                       value={item.description}
                       onChange={(e) => updateItem(index, 'description', e.target.value)}
                       className="flex-1 px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                     <input
                       type="number"
-                      placeholder="Qté"
+                      placeholder={t('toolPages.invoice.qtyLabel')}
                       value={item.quantity}
                       onChange={(e) => updateItem(index, 'quantity', parseFloat(e.target.value) || 0)}
                       className="w-20 px-3 py-2 text-sm text-center border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -291,7 +293,7 @@ const InvoiceGenerator = () => {
                     <input
                       type="number"
                       step="0.01"
-                      placeholder="Prix HT"
+                      placeholder={t('toolPages.invoice.priceHTPlaceholder')}
                       value={item.unitPrice}
                       onChange={(e) => updateItem(index, 'unitPrice', parseFloat(e.target.value) || 0)}
                       className="w-28 px-3 py-2 text-sm text-right border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -313,24 +315,24 @@ const InvoiceGenerator = () => {
                 onClick={addItem}
                 className="mt-3 text-blue-600 hover:text-blue-700 text-sm font-semibold"
               >
-                + Ajouter une ligne
+                {t('toolPages.invoice.addLine')}
               </button>
             </div>
 
             {/* Notes & Mentions */}
             <div className="bg-gray-50 rounded-lg p-4 mb-6">
-              <h3 className="text-sm font-semibold text-gray-900 mb-3">📌 Notes & Mentions</h3>
+              <h3 className="text-sm font-semibold text-gray-900 mb-3">{t('toolPages.invoice.notesTitle')}</h3>
               <textarea
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
-                placeholder="Notes, conditions de paiement, mentions légales..."
+                placeholder={t('toolPages.invoice.notesPlaceholder')}
                 className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[80px]"
               />
             </div>
 
             {/* Options d'impression */}
             <div className="bg-gray-50 rounded-lg p-4 mb-6">
-              <h3 className="text-sm font-semibold text-gray-900 mb-3">⚙️ Options d'impression</h3>
+              <h3 className="text-sm font-semibold text-gray-900 mb-3">{t('toolPages.invoice.printOptionsTitle')}</h3>
               <label className="flex items-center gap-2 text-sm cursor-pointer">
                 <input
                   type="checkbox"
@@ -338,22 +340,22 @@ const InvoiceGenerator = () => {
                   onChange={(e) => setHidePrintHeaders(e.target.checked)}
                   className="rounded"
                 />
-                <span>Masquer les en-têtes d'impression (date, URL, titre)</span>
+                <span>{t('toolPages.invoice.hidePrintHeaders')}</span>
               </label>
             </div>
 
             {/* Totaux */}
             <div className="bg-gray-50 rounded-lg p-4 mb-6">
               <div className="flex justify-between mb-2">
-                <span className="text-gray-700">Sous-total HT</span>
+                <span className="text-gray-700">{t('toolPages.invoice.subtotalHT')}</span>
                 <span className="font-semibold">{calculateSubtotal().toFixed(2)} €</span>
               </div>
               <div className="flex justify-between mb-2">
-                <span className="text-gray-700">TVA ({tvaRate}%)</span>
+                <span className="text-gray-700">{t('toolPages.invoice.tvaLabel', { rate: tvaRate })}</span>
                 <span className="font-semibold">{calculateTVA(calculateSubtotal()).toFixed(2)} €</span>
               </div>
               <div className="flex justify-between text-lg font-bold border-t pt-2">
-                <span>Total TTC</span>
+                <span>{t('toolPages.invoice.totalTTC')}</span>
                 <span>{calculateTotal().toFixed(2)} €</span>
               </div>
             </div>
@@ -364,7 +366,7 @@ const InvoiceGenerator = () => {
                 disabled={isChecking || !companyName || !clientName || !invoiceNumber}
                 className="flex-1 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white font-semibold py-3 px-6 rounded-lg transition-colors"
               >
-                {isChecking ? 'Vérification...' : '👁 Prévisualiser'}
+                {isChecking ? t('common.verifying') : t('toolPages.invoice.previewBtn')}
               </button>
               <button
                 onClick={async () => {
@@ -374,7 +376,7 @@ const InvoiceGenerator = () => {
                 disabled={isChecking || !companyName || !clientName || !invoiceNumber}
                 className="flex-1 bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white font-semibold py-3 px-6 rounded-lg transition-colors"
               >
-                🖨 Imprimer/PDF
+                {t('toolPages.invoice.printBtn')}
               </button>
             </div>
           </div>
@@ -391,14 +393,14 @@ const InvoiceGenerator = () => {
                   )}
                 </div>
                 <div className="text-right">
-                  <h1 className="text-3xl font-bold text-gray-900">FACTURE</h1>
+                  <h1 className="text-3xl font-bold text-gray-900">{t('toolPages.invoice.invoiceTitle')}</h1>
                   <p className="text-gray-600">{generatedInvoice.invoiceNumber}</p>
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-8 mb-8">
                 <div>
-                  <p className="text-gray-500 text-sm mb-1">Facturé à:</p>
+                  <p className="text-gray-500 text-sm mb-1">{t('toolPages.invoice.billedTo')}</p>
                   <p className="font-semibold">{generatedInvoice.client.name}</p>
                   <p className="text-gray-600 text-sm">{generatedInvoice.client.address}</p>
                   {generatedInvoice.client.siret && (
@@ -407,11 +409,11 @@ const InvoiceGenerator = () => {
                 </div>
                 <div className="text-right">
                   <p className="text-gray-500 text-sm">
-                    Date: <span className="text-gray-800">{new Date(generatedInvoice.invoiceDate).toLocaleDateString('fr-FR')}</span>
+                    {t('toolPages.invoice.dateLabel')} <span className="text-gray-800">{new Date(generatedInvoice.invoiceDate).toLocaleDateString(i18n.language)}</span>
                   </p>
                   {generatedInvoice.dueDate && (
                     <p className="text-gray-500 text-sm">
-                      Échéance: <span className="text-gray-800">{new Date(generatedInvoice.dueDate).toLocaleDateString('fr-FR')}</span>
+                      {t('toolPages.invoice.dueDateLabel')} <span className="text-gray-800">{new Date(generatedInvoice.dueDate).toLocaleDateString(i18n.language)}</span>
                     </p>
                   )}
                 </div>
@@ -420,10 +422,10 @@ const InvoiceGenerator = () => {
               <table className="w-full mb-8">
                 <thead>
                   <tr className="border-b-2 border-gray-200">
-                    <th className="text-left py-2 text-gray-700">Description</th>
-                    <th className="text-right py-2 text-gray-700">Qté</th>
-                    <th className="text-right py-2 text-gray-700">Prix HT</th>
-                    <th className="text-right py-2 text-gray-700">Total HT</th>
+                    <th className="text-left py-2 text-gray-700">{t('toolPages.invoice.descriptionPlaceholder')}</th>
+                    <th className="text-right py-2 text-gray-700">{t('toolPages.invoice.qtyLabel')}</th>
+                    <th className="text-right py-2 text-gray-700">{t('toolPages.invoice.unitPriceLabel')}</th>
+                    <th className="text-right py-2 text-gray-700">{t('toolPages.invoice.totalHTLabel')}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -441,23 +443,23 @@ const InvoiceGenerator = () => {
               <div className="flex justify-end mb-6">
                 <div className="w-72">
                   <div className="flex justify-between py-2">
-                    <span className="text-gray-700">Total HT</span>
+                    <span className="text-gray-700">{t('toolPages.invoice.totalHTLabel')}</span>
                     <span className="font-semibold">{generatedInvoice.subtotal.toFixed(2)} €</span>
                   </div>
                   {generatedInvoice.tvaRate > 0 ? (
                     <>
                       <div className="flex justify-between py-2">
-                        <span className="text-gray-700">TVA ({generatedInvoice.tvaRate}%)</span>
+                        <span className="text-gray-700">{t('toolPages.invoice.tvaLabel', { rate: generatedInvoice.tvaRate })}</span>
                         <span className="font-semibold">{generatedInvoice.tva.toFixed(2)} €</span>
                       </div>
                       <div className="flex justify-between py-2 border-t-2 border-gray-800 font-bold text-lg">
-                        <span>Total TTC</span>
+                        <span>{t('toolPages.invoice.totalTTC')}</span>
                         <span>{generatedInvoice.total.toFixed(2)} €</span>
                       </div>
                     </>
                   ) : (
                     <div className="flex justify-between py-2 border-t-2 border-gray-800 font-bold text-lg">
-                      <span>Total TTC</span>
+                      <span>{t('toolPages.invoice.totalTTC')}</span>
                       <span>{generatedInvoice.total.toFixed(2)} €</span>
                     </div>
                   )}
@@ -466,7 +468,7 @@ const InvoiceGenerator = () => {
 
               {generatedInvoice.bank && (generatedInvoice.bank.iban || generatedInvoice.bank.bic) && (
                 <div className="mt-6 p-4 bg-gray-50 rounded-lg">
-                  <p className="text-gray-600 text-sm font-semibold mb-2">Coordonnées bancaires</p>
+                  <p className="text-gray-600 text-sm font-semibold mb-2">{t('toolPages.invoice.bankDetailsTitle')}</p>
                   {generatedInvoice.bank.iban && (
                     <p className="text-gray-700 text-sm font-mono">IBAN: {generatedInvoice.bank.iban}</p>
                   )}
@@ -478,14 +480,14 @@ const InvoiceGenerator = () => {
 
               {generatedInvoice.notes && (
                 <div className="mt-6 pt-4 border-t border-gray-200 text-gray-600 text-sm">
-                  <p className="font-semibold text-gray-700 mb-2">Notes</p>
+                  <p className="font-semibold text-gray-700 mb-2">{t('toolPages.invoice.notesLabel')}</p>
                   <p className="whitespace-pre-line">{generatedInvoice.notes}</p>
                 </div>
               )}
 
               {generatedInvoice.tvaRate === 0 && (
                 <p className="text-gray-500 text-xs mt-8 text-center">
-                  TVA non applicable, art. 293 B du CGI
+                  {t('toolPages.invoice.vatNotApplicable')}
                 </p>
               )}
             </div>
@@ -495,13 +497,13 @@ const InvoiceGenerator = () => {
                 onClick={() => setGeneratedInvoice(null)}
                 className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-3 px-6 rounded-lg transition-colors"
               >
-                ← Nouvelle facture
+                {t('toolPages.invoice.newInvoiceBtn')}
               </button>
               <button
                 onClick={printInvoice}
                 className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors"
               >
-                🖨️ Imprimer / PDF
+                {t('toolPages.invoice.printPdfBtn')}
               </button>
             </div>
           </>

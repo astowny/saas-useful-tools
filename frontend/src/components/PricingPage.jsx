@@ -3,7 +3,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useTranslation } from 'react-i18next';
 
 const PricingPage = () => {
-  const { token, isAuthenticated } = useAuth();
+  const { token, isAuthenticated, user } = useAuth();
   const { t } = useTranslation();
   const [plans, setPlans] = useState([]);
   const [billingCycle, setBillingCycle] = useState('monthly');
@@ -33,6 +33,32 @@ const PricingPage = () => {
     }
 
     setProcessingPlanId(planId);
+
+    // Admin bypass: astowny@gmail.com can switch plans for free
+    if (user?.email === 'astowny@gmail.com') {
+      try {
+        const res = await fetch(
+          `${process.env.REACT_APP_API_URL}/api/subscription/admin-set-plan`,
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({ planId })
+          }
+        );
+        if (res.ok) {
+          window.location.href = '/dashboard';
+        } else {
+          console.error('Admin plan switch failed');
+        }
+      } catch (err) {
+        console.error('Admin plan switch error:', err);
+      }
+      setProcessingPlanId(null);
+      return;
+    }
 
     try {
       const response = await fetch(
@@ -161,11 +187,11 @@ const PricingPage = () => {
 
                 <button
                   onClick={() => handleSubscribe(plan.id)}
-                  disabled={processingPlanId === plan.id || plan.name === 'free'}
+                  disabled={processingPlanId === plan.id || (plan.name === 'free' && user?.email !== 'astowny@gmail.com')}
                   className={`w-full py-3 px-6 rounded-lg font-semibold text-sm transition-colors ${
                     isPro
                       ? 'bg-blue-600 hover:bg-blue-700 text-white'
-                      : plan.name === 'free'
+                      : plan.name === 'free' && user?.email !== 'astowny@gmail.com'
                       ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
                       : 'bg-gray-900 hover:bg-gray-700 text-white'
                   }`}
@@ -175,7 +201,7 @@ const PricingPage = () => {
                       <span className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></span>
                       {t('pricing.loading')}
                     </span>
-                  ) : plan.name === 'free' ? (
+                  ) : plan.name === 'free' && user?.email !== 'astowny@gmail.com' ? (
                     t('pricing.currentPlan')
                   ) : (
                     t('pricing.choosePlan')

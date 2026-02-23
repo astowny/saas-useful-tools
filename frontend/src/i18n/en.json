@@ -459,6 +459,22 @@
         "hour": "hour",
         "package": "package",
         "month": "month"
+      },
+      "siretPlaceholder": "SIRET",
+      "qtyLabel": "Qty",
+      "unitLabel": "Unit",
+      "unitPriceLabel": "Unit price",
+      "totalHTLabel": "Total excl. tax",
+      "tvaLabel": "VAT ({{rate}}%)",
+      "vatNotApplicable": "VAT not applicable, art. 293 B of the Tax Code",
+      "quoteTitle": "QUOTE",
+      "clientLabel": "Client",
+      "pricePlaceholder": "Price",
+      "tvaOptions": {
+        "zero": "VAT 0% (Not applicable)",
+        "five": "VAT 5.5%",
+        "ten": "VAT 10%",
+        "twenty": "VAT 20%"
       }
     },
     "invoice": {
@@ -493,7 +509,21 @@
       "dateLabel": "Date:",
       "dueDateLabel": "Due date:",
       "bankDetailsTitle": "Bank details",
-      "notesLabel": "Notes"
+      "notesLabel": "Notes",
+      "siretPlaceholder": "SIRET",
+      "clientSiretPlaceholder": "Client SIRET",
+      "qtyLabel": "Qty",
+      "unitPriceLabel": "Unit price",
+      "totalHTLabel": "Total excl. tax",
+      "tvaLabel": "VAT ({{rate}}%)",
+      "invoiceTitle": "INVOICE",
+      "vatNotApplicable": "VAT not applicable, art. 293 B of the Tax Code",
+      "tvaOptions": {
+        "zero": "VAT 0% (Not applicable)",
+        "five": "VAT 5.5%",
+        "ten": "VAT 10%",
+        "twenty": "VAT 20%"
+      }
     }
   },
   "enterprise": {

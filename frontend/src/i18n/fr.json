@@ -459,6 +459,22 @@
         "hour": "heure",
         "package": "forfait",
         "month": "mois"
+      },
+      "siretPlaceholder": "SIRET",
+      "qtyLabel": "Qté",
+      "unitLabel": "Unité",
+      "unitPriceLabel": "Prix unit.",
+      "totalHTLabel": "Total HT",
+      "tvaLabel": "TVA ({{rate}}%)",
+      "vatNotApplicable": "TVA non applicable, art. 293 B du CGI",
+      "quoteTitle": "DEVIS",
+      "clientLabel": "Client",
+      "pricePlaceholder": "Prix",
+      "tvaOptions": {
+        "zero": "TVA 0% (Non applicable)",
+        "five": "TVA 5.5%",
+        "ten": "TVA 10%",
+        "twenty": "TVA 20%"
       }
     },
     "invoice": {
@@ -493,7 +509,21 @@
       "dateLabel": "Date :",
       "dueDateLabel": "Échéance :",
       "bankDetailsTitle": "Coordonnées bancaires",
-      "notesLabel": "Notes"
+      "notesLabel": "Notes",
+      "siretPlaceholder": "SIRET",
+      "clientSiretPlaceholder": "SIRET client",
+      "qtyLabel": "Qté",
+      "unitPriceLabel": "Prix HT",
+      "totalHTLabel": "Total HT",
+      "tvaLabel": "TVA ({{rate}}%)",
+      "invoiceTitle": "FACTURE",
+      "vatNotApplicable": "TVA non applicable, art. 293 B du CGI",
+      "tvaOptions": {
+        "zero": "TVA 0% (Non applicable)",
+        "five": "TVA 5.5%",
+        "ten": "TVA 10%",
+        "twenty": "TVA 20%"
+      }
     }
   },
   "enterprise": {

@@ -1,49 +1,51 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useQuota } from '../../hooks/useQuota';
 
 const QuoteGenerator = () => {
+  const { t, i18n } = useTranslation();
   const { checkAndUseQuota, isChecking, quotaError } = useQuota();
 
-  // Templates par défaut
+  // Default templates
   const defaultTemplates = {
     'dev-web': {
-      name: '💻 Développement Web',
+      name: '💻 Web Development',
       lines: [
-        { description: 'Conception et maquettes', quantity: 1, unit: 'forfait', unitPrice: 500 },
-        { description: 'Développement front-end', quantity: 1, unit: 'jour', unitPrice: 450 },
-        { description: 'Développement back-end', quantity: 1, unit: 'jour', unitPrice: 500 },
-        { description: 'Tests et recette', quantity: 1, unit: 'forfait', unitPrice: 300 }
+        { description: 'Design and wireframes', quantity: 1, unit: 'package', unitPrice: 500 },
+        { description: 'Front-end development', quantity: 1, unit: 'day', unitPrice: 450 },
+        { description: 'Back-end development', quantity: 1, unit: 'day', unitPrice: 500 },
+        { description: 'Tests and review', quantity: 1, unit: 'package', unitPrice: 300 }
       ],
-      conditions: 'Acompte de 30% à la commande. Solde à la livraison.\nDélai de réalisation : selon planning convenu.'
+      conditions: '30% deposit on order. Balance on delivery.\nDelivery time: as agreed.'
     },
     'design': {
-      name: '🎨 Design Graphique',
+      name: '🎨 Graphic Design',
       lines: [
-        { description: 'Brief et recherches', quantity: 1, unit: 'forfait', unitPrice: 200 },
-        { description: 'Propositions graphiques', quantity: 3, unit: 'proposition', unitPrice: 150 },
-        { description: 'Retouches et ajustements', quantity: 2, unit: 'révision', unitPrice: 100 },
-        { description: 'Livraison fichiers sources', quantity: 1, unit: 'forfait', unitPrice: 50 }
+        { description: 'Brief and research', quantity: 1, unit: 'package', unitPrice: 200 },
+        { description: 'Graphic proposals', quantity: 3, unit: 'unit', unitPrice: 150 },
+        { description: 'Revisions and adjustments', quantity: 2, unit: 'unit', unitPrice: 100 },
+        { description: 'Source files delivery', quantity: 1, unit: 'package', unitPrice: 50 }
       ],
-      conditions: 'Acompte de 50% à la commande.\n3 propositions incluses, révisions supplémentaires facturées.'
+      conditions: '50% deposit on order.\n3 proposals included, additional revisions billed separately.'
     },
     'consulting': {
       name: '📊 Consulting',
       lines: [
-        { description: 'Audit initial', quantity: 1, unit: 'jour', unitPrice: 800 },
-        { description: 'Accompagnement stratégique', quantity: 1, unit: 'jour', unitPrice: 750 },
-        { description: 'Rapport et recommandations', quantity: 1, unit: 'forfait', unitPrice: 500 }
+        { description: 'Initial audit', quantity: 1, unit: 'day', unitPrice: 800 },
+        { description: 'Strategic support', quantity: 1, unit: 'day', unitPrice: 750 },
+        { description: 'Report and recommendations', quantity: 1, unit: 'package', unitPrice: 500 }
       ],
-      conditions: 'Facturation mensuelle. Frais de déplacement en sus.'
+      conditions: 'Monthly billing. Travel expenses not included.'
     },
     'formation': {
-      name: '📚 Formation',
+      name: '📚 Training',
       lines: [
-        { description: 'Préparation pédagogique', quantity: 1, unit: 'forfait', unitPrice: 400 },
-        { description: 'Animation formation', quantity: 1, unit: 'jour', unitPrice: 900 },
-        { description: 'Supports de cours', quantity: 1, unit: 'forfait', unitPrice: 200 }
+        { description: 'Training preparation', quantity: 1, unit: 'package', unitPrice: 400 },
+        { description: 'Training facilitation', quantity: 1, unit: 'day', unitPrice: 900 },
+        { description: 'Course materials', quantity: 1, unit: 'package', unitPrice: 200 }
       ],
-      conditions: 'Formation intra-entreprise. Jusqu\'à 8 participants.'
+      conditions: 'In-house training. Up to 8 participants.'
     }
   };
 
@@ -73,7 +75,7 @@ const QuoteGenerator = () => {
 
   // Lignes de devis
   const [items, setItems] = useState([
-    { description: '', quantity: 1, unit: 'unité', unitPrice: 0 }
+    { description: '', quantity: 1, unit: 'unit', unitPrice: 0 }
   ]);
 
   const [generatedQuote, setGeneratedQuote] = useState(null);
@@ -109,12 +111,12 @@ const QuoteGenerator = () => {
   };
 
   const clearForm = () => {
-    setItems([{ description: '', quantity: 1, unit: 'unité', unitPrice: 0 }]);
+    setItems([{ description: '', quantity: 1, unit: 'unit', unitPrice: 0 }]);
     setConditions('');
   };
 
   const saveTemplate = () => {
-    const name = prompt('Nom du template:');
+    const name = window.prompt(t('toolPages.quote.templateNamePrompt'));
     if (!name) return;
 
     const id = 'custom-' + Date.now();
@@ -129,11 +131,11 @@ const QuoteGenerator = () => {
 
     setCustomTemplates(newTemplates);
     localStorage.setItem('quoteTemplates', JSON.stringify(newTemplates));
-    alert('Template sauvegardé !');
+    window.alert(t('toolPages.quote.templateSaved'));
   };
 
   const addItem = () => {
-    setItems([...items, { description: '', quantity: 1, unit: 'unité', unitPrice: 0 }]);
+    setItems([...items, { description: '', quantity: 1, unit: 'unit', unitPrice: 0 }]);
   };
 
   const removeItem = (index) => {
@@ -203,25 +205,24 @@ const QuoteGenerator = () => {
     <div className="min-h-screen bg-gray-50">
       <div className="container mx-auto px-4 py-8 max-w-6xl">
         <Link to="/tools" className="text-blue-600 hover:text-blue-700 mb-6 inline-flex items-center gap-2 no-print">
-          ← Retour aux outils
+          {t('common.backToTools')}
         </Link>
 
         <div className="mb-8 no-print">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">📋 Générateur de Devis</h1>
-          <p className="text-gray-600">Créez des devis professionnels en quelques clics</p>
+          <h1 className="text-4xl font-bold text-gray-900 mb-2">{t('toolPages.quote.title')}</h1>
+          <p className="text-gray-600">{t('toolPages.quote.subtitle')}</p>
         </div>
 
-        {/* Affichage des erreurs de quota */}
         {quotaError && (
           <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg no-print">
             <div className="flex items-start gap-3">
               <span className="text-2xl">⛔</span>
               <div className="flex-1">
-                <h3 className="font-semibold text-red-900 mb-1">Limite atteinte</h3>
+                <h3 className="font-semibold text-red-900 mb-1">{t('common.limitReached')}</h3>
                 <p className="text-sm text-red-800">{quotaError.message}</p>
                 {quotaError.type === 'NO_SUBSCRIPTION' && (
                   <Link to="/pricing" className="inline-block mt-2 text-sm font-semibold text-red-700 underline hover:text-red-600">
-                    Voir les plans disponibles →
+                    {t('common.viewPlans')}
                   </Link>
                 )}
               </div>
@@ -233,7 +234,7 @@ const QuoteGenerator = () => {
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 no-print">
             {/* Sélection de template */}
             <div className="bg-gray-50 rounded-lg p-4 mb-6">
-              <h3 className="text-sm font-semibold text-gray-900 mb-3">📁 Sélectionner un template</h3>
+              <h3 className="text-sm font-semibold text-gray-900 mb-3">{t('toolPages.quote.selectTemplate')}</h3>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                 {Object.entries(getAllTemplates()).map(([id, template]) => (
                   <button
@@ -242,15 +243,15 @@ const QuoteGenerator = () => {
                     className="p-3 bg-white hover:bg-blue-50 rounded-lg text-left border border-gray-300 hover:border-blue-500 transition-all"
                   >
                     <div className="font-medium text-sm">{template.name}</div>
-                    <div className="text-xs text-gray-500">{template.lines.length} lignes</div>
+                    <div className="text-xs text-gray-500">{t('toolPages.quote.lines', { count: template.lines.length })}</div>
                   </button>
                 ))}
                 <button
                   onClick={clearForm}
                   className="p-3 bg-white hover:bg-yellow-50 rounded-lg text-left border border-gray-300 hover:border-yellow-500 transition-all"
                 >
-                  <div className="font-medium text-sm">📝 Vierge</div>
-                  <div className="text-xs text-gray-500">Devis vide</div>
+                  <div className="font-medium text-sm">{t('toolPages.quote.blank')}</div>
+                  <div className="text-xs text-gray-500">{t('toolPages.quote.blankDesc')}</div>
                 </button>
               </div>
             </div>
@@ -258,39 +259,39 @@ const QuoteGenerator = () => {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
               {/* Informations entreprise */}
               <div className="bg-gray-50 rounded-lg p-4">
-                <h3 className="text-sm font-semibold text-gray-900 mb-3">👤 Émetteur</h3>
+                <h3 className="text-sm font-semibold text-gray-900 mb-3">{t('toolPages.quote.emitterTitle')}</h3>
                 <div className="space-y-2">
                   <input
                     type="text"
-                    placeholder="Nom de l'entreprise"
+                    placeholder={t('toolPages.quote.companyPlaceholder')}
                     value={companyName}
                     onChange={(e) => setCompanyName(e.target.value)}
                     className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                   <input
                     type="text"
-                    placeholder="Adresse"
+                    placeholder={t('toolPages.quote.addressPlaceholder')}
                     value={companyAddress}
                     onChange={(e) => setCompanyAddress(e.target.value)}
                     className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                   <input
                     type="email"
-                    placeholder="Email"
+                    placeholder={t('toolPages.quote.emailPlaceholder')}
                     value={companyEmail}
                     onChange={(e) => setCompanyEmail(e.target.value)}
                     className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                   <input
                     type="tel"
-                    placeholder="Téléphone"
+                    placeholder={t('toolPages.quote.phonePlaceholder')}
                     value={companyPhone}
                     onChange={(e) => setCompanyPhone(e.target.value)}
                     className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                   <input
                     type="text"
-                    placeholder="SIRET"
+                    placeholder={t('toolPages.quote.siretPlaceholder')}
                     value={companySiret}
                     onChange={(e) => setCompanySiret(e.target.value)}
                     className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -298,34 +299,34 @@ const QuoteGenerator = () => {
                 </div>
               </div>
 
-              {/* Informations client */}
+              {/* Client */}
               <div className="bg-gray-50 rounded-lg p-4">
-                <h3 className="text-sm font-semibold text-gray-900 mb-3">🏢 Client</h3>
+                <h3 className="text-sm font-semibold text-gray-900 mb-3">{t('toolPages.quote.clientTitle')}</h3>
                 <div className="space-y-2">
                   <input
                     type="text"
-                    placeholder="Nom du client"
+                    placeholder={t('toolPages.quote.clientNamePlaceholder')}
                     value={clientName}
                     onChange={(e) => setClientName(e.target.value)}
                     className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                   <input
                     type="text"
-                    placeholder="Adresse client"
+                    placeholder={t('toolPages.quote.clientAddressPlaceholder')}
                     value={clientAddress}
                     onChange={(e) => setClientAddress(e.target.value)}
                     className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                   <input
                     type="email"
-                    placeholder="Email client"
+                    placeholder={t('toolPages.quote.clientEmailPlaceholder')}
                     value={clientEmail}
                     onChange={(e) => setClientEmail(e.target.value)}
                     className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                   <input
                     type="tel"
-                    placeholder="Téléphone client"
+                    placeholder={t('toolPages.quote.clientPhonePlaceholder')}
                     value={clientPhone}
                     onChange={(e) => setClientPhone(e.target.value)}
                     className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -333,13 +334,13 @@ const QuoteGenerator = () => {
                 </div>
               </div>
 
-              {/* Informations devis */}
+              {/* Quote info */}
               <div className="bg-gray-50 rounded-lg p-4">
-                <h3 className="text-sm font-semibold text-gray-900 mb-3">📄 Devis</h3>
+                <h3 className="text-sm font-semibold text-gray-900 mb-3">{t('toolPages.quote.quoteInfoTitle')}</h3>
                 <div className="space-y-2">
                   <input
                     type="text"
-                    placeholder="N° Devis"
+                    placeholder={t('toolPages.quote.quoteNumberPlaceholder')}
                     value={quoteNumber}
                     onChange={(e) => setQuoteNumber(e.target.value)}
                     className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -361,10 +362,10 @@ const QuoteGenerator = () => {
                     onChange={(e) => setTvaRate(parseFloat(e.target.value))}
                     className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                   >
-                    <option value="0">TVA 0% (Non applicable)</option>
-                    <option value="5.5">TVA 5.5%</option>
-                    <option value="10">TVA 10%</option>
-                    <option value="20">TVA 20%</option>
+                    <option value="0">{t('toolPages.quote.tvaOptions.zero')}</option>
+                    <option value="5.5">{t('toolPages.quote.tvaOptions.five')}</option>
+                    <option value="10">{t('toolPages.quote.tvaOptions.ten')}</option>
+                    <option value="20">{t('toolPages.quote.tvaOptions.twenty')}</option>
                   </select>
                 </div>
               </div>
@@ -372,20 +373,20 @@ const QuoteGenerator = () => {
 
             {/* Lignes de devis */}
             <div className="bg-gray-50 rounded-lg p-4 mb-6">
-              <h3 className="text-sm font-semibold text-gray-900 mb-3">📝 Prestations</h3>
+              <h3 className="text-sm font-semibold text-gray-900 mb-3">{t('toolPages.quote.servicesTitle')}</h3>
               <div className="space-y-2">
                 {items.map((item, index) => (
                   <div key={index} className="flex gap-2 items-center">
                     <input
                       type="text"
-                      placeholder="Description"
+                      placeholder={t('toolPages.quote.descriptionPlaceholder')}
                       value={item.description}
                       onChange={(e) => updateItem(index, 'description', e.target.value)}
                       className="flex-1 px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                     <input
                       type="number"
-                      placeholder="Qté"
+                      placeholder={t('toolPages.quote.qtyLabel')}
                       value={item.quantity}
                       onChange={(e) => updateItem(index, 'quantity', parseFloat(e.target.value) || 0)}
                       className="w-16 px-3 py-2 text-sm text-center border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -395,16 +396,16 @@ const QuoteGenerator = () => {
                       onChange={(e) => updateItem(index, 'unit', e.target.value)}
                       className="w-24 px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                     >
-                      <option value="unité">unité</option>
-                      <option value="jour">jour</option>
-                      <option value="heure">heure</option>
-                      <option value="forfait">forfait</option>
-                      <option value="mois">mois</option>
+                      <option value="unit">{t('toolPages.quote.units.unit')}</option>
+                      <option value="day">{t('toolPages.quote.units.day')}</option>
+                      <option value="hour">{t('toolPages.quote.units.hour')}</option>
+                      <option value="package">{t('toolPages.quote.units.package')}</option>
+                      <option value="month">{t('toolPages.quote.units.month')}</option>
                     </select>
                     <input
                       type="number"
                       step="0.01"
-                      placeholder="Prix"
+                      placeholder={t('toolPages.quote.pricePlaceholder')}
                       value={item.unitPrice}
                       onChange={(e) => updateItem(index, 'unitPrice', parseFloat(e.target.value) || 0)}
                       className="w-24 px-3 py-2 text-sm text-right border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -426,17 +427,17 @@ const QuoteGenerator = () => {
                 onClick={addItem}
                 className="mt-3 text-blue-600 hover:text-blue-700 text-sm font-semibold"
               >
-                + Ajouter une prestation
+                {t('toolPages.quote.addService')}
               </button>
             </div>
 
             {/* Conditions */}
             <div className="bg-gray-50 rounded-lg p-4 mb-6">
-              <h3 className="text-sm font-semibold text-gray-900 mb-3">📌 Conditions</h3>
+              <h3 className="text-sm font-semibold text-gray-900 mb-3">{t('toolPages.quote.conditionsTitle')}</h3>
               <textarea
                 value={conditions}
                 onChange={(e) => setConditions(e.target.value)}
-                placeholder="Conditions de paiement, délais, mentions légales..."
+                placeholder={t('toolPages.quote.conditionsPlaceholder')}
                 className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[80px]"
                 rows="3"
               />
@@ -445,15 +446,15 @@ const QuoteGenerator = () => {
             {/* Totaux */}
             <div className="bg-gray-50 rounded-lg p-4 mb-6">
               <div className="flex justify-between mb-2">
-                <span className="text-gray-700">Sous-total HT</span>
+                <span className="text-gray-700">{t('toolPages.quote.subtotalHT')}</span>
                 <span className="font-semibold">{calculateSubtotal().toFixed(2)} €</span>
               </div>
               <div className="flex justify-between mb-2">
-                <span className="text-gray-700">TVA ({tvaRate}%)</span>
+                <span className="text-gray-700">{t('toolPages.quote.tvaLabel', { rate: tvaRate })}</span>
                 <span className="font-semibold">{calculateTVA(calculateSubtotal()).toFixed(2)} €</span>
               </div>
               <div className="flex justify-between text-lg font-bold border-t pt-2">
-                <span>Total TTC</span>
+                <span>{t('toolPages.quote.totalTTC')}</span>
                 <span>{calculateTotal().toFixed(2)} €</span>
               </div>
             </div>
@@ -464,13 +465,13 @@ const QuoteGenerator = () => {
                 disabled={isChecking || !companyName || !clientName || !quoteNumber}
                 className="flex-1 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white font-semibold py-3 px-6 rounded-lg transition-colors"
               >
-                {isChecking ? 'Vérification...' : '👁 Prévisualiser'}
+                {isChecking ? t('common.verifying') : t('toolPages.quote.previewBtn')}
               </button>
               <button
                 onClick={saveTemplate}
                 className="flex-1 bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors"
               >
-                💾 Sauvegarder template
+                {t('toolPages.quote.saveTemplateBtn')}
               </button>
               <button
                 onClick={async () => {
@@ -480,7 +481,7 @@ const QuoteGenerator = () => {
                 disabled={isChecking || !companyName || !clientName || !quoteNumber}
                 className="flex-1 bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white font-semibold py-3 px-6 rounded-lg transition-colors"
               >
-                🖨 Imprimer/PDF
+                {t('toolPages.quote.printBtn')}
               </button>
             </div>
           </div>
@@ -500,14 +501,14 @@ const QuoteGenerator = () => {
                   )}
                 </div>
                 <div className="text-right">
-                  <h1 className="text-3xl font-bold text-gray-800">DEVIS</h1>
+                  <h1 className="text-3xl font-bold text-gray-800">{t('toolPages.quote.quoteTitle')}</h1>
                   <p className="text-gray-600">{generatedQuote.quoteNumber}</p>
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-8 mb-8">
                 <div className="bg-gray-50 rounded-lg p-4">
-                  <p className="text-gray-500 text-sm mb-1 font-medium">Client</p>
+                  <p className="text-gray-500 text-sm mb-1 font-medium">{t('toolPages.quote.clientLabel')}</p>
                   <p className="font-semibold text-lg">{generatedQuote.client.name}</p>
                   <p className="text-gray-600 text-sm">{generatedQuote.client.address}</p>
                   <p className="text-gray-500 text-sm">
@@ -516,11 +517,11 @@ const QuoteGenerator = () => {
                 </div>
                 <div className="text-right">
                   <p className="text-gray-500 text-sm">
-                    Date: <span className="text-gray-800 font-medium">{new Date(generatedQuote.quoteDate).toLocaleDateString('fr-FR')}</span>
+                    {t('toolPages.quote.dateLabel')} <span className="text-gray-800 font-medium">{new Date(generatedQuote.quoteDate).toLocaleDateString(i18n.language)}</span>
                   </p>
                   {generatedQuote.validUntil && (
                     <p className="text-gray-500 text-sm">
-                      Valable jusqu'au: <span className="text-gray-800 font-medium">{new Date(generatedQuote.validUntil).toLocaleDateString('fr-FR')}</span>
+                      {t('toolPages.quote.validUntilLabel')} <span className="text-gray-800 font-medium">{new Date(generatedQuote.validUntil).toLocaleDateString(i18n.language)}</span>
                     </p>
                   )}
                 </div>
@@ -529,11 +530,11 @@ const QuoteGenerator = () => {
               <table className="w-full mb-8">
                 <thead>
                   <tr className="bg-gray-100">
-                    <th className="text-left py-3 px-2 rounded-l-lg text-gray-700">Description</th>
-                    <th className="text-center py-3 px-2 text-gray-700">Qté</th>
-                    <th className="text-center py-3 px-2 text-gray-700">Unité</th>
-                    <th className="text-right py-3 px-2 text-gray-700">Prix unit.</th>
-                    <th className="text-right py-3 px-2 rounded-r-lg text-gray-700">Total HT</th>
+                    <th className="text-left py-3 px-2 rounded-l-lg text-gray-700">{t('toolPages.quote.descriptionPlaceholder')}</th>
+                    <th className="text-center py-3 px-2 text-gray-700">{t('toolPages.quote.qtyLabel')}</th>
+                    <th className="text-center py-3 px-2 text-gray-700">{t('toolPages.quote.unitLabel')}</th>
+                    <th className="text-right py-3 px-2 text-gray-700">{t('toolPages.quote.unitPriceLabel')}</th>
+                    <th className="text-right py-3 px-2 rounded-r-lg text-gray-700">{t('toolPages.quote.totalHTLabel')}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -541,7 +542,7 @@ const QuoteGenerator = () => {
                     <tr key={index} className="border-b border-gray-100">
                       <td className="py-3 px-2">{item.description}</td>
                       <td className="text-center py-3 px-2">{item.quantity}</td>
-                      <td className="text-center py-3 px-2">{item.unit}</td>
+                      <td className="text-center py-3 px-2">{t('toolPages.quote.units.' + item.unit, item.unit)}</td>
                       <td className="text-right py-3 px-2">{item.unitPrice.toFixed(2)} €</td>
                       <td className="text-right py-3 px-2 font-medium">{(item.quantity * item.unitPrice).toFixed(2)} €</td>
                     </tr>
@@ -552,15 +553,15 @@ const QuoteGenerator = () => {
               <div className="flex justify-end mb-8">
                 <div className="w-72 bg-gray-50 rounded-lg p-4">
                   <div className="flex justify-between py-1">
-                    <span className="text-gray-600">Total HT</span>
+                    <span className="text-gray-600">{t('toolPages.quote.totalHTLabel')}</span>
                     <span className="font-medium">{generatedQuote.subtotal.toFixed(2)} €</span>
                   </div>
                   <div className="flex justify-between py-1">
-                    <span className="text-gray-600">TVA ({generatedQuote.tvaRate}%)</span>
+                    <span className="text-gray-600">{t('toolPages.quote.tvaLabel', { rate: generatedQuote.tvaRate })}</span>
                     <span className="font-medium">{generatedQuote.tva.toFixed(2)} €</span>
                   </div>
                   <div className="flex justify-between py-2 border-t-2 border-gray-800 mt-2 font-bold text-xl">
-                    <span>Total TTC</span>
+                    <span>{t('toolPages.quote.totalTTC')}</span>
                     <span className="text-blue-600">{generatedQuote.total.toFixed(2)} €</span>
                   </div>
                 </div>
@@ -568,19 +569,19 @@ const QuoteGenerator = () => {
 
               {generatedQuote.conditions && (
                 <div className="border-t border-gray-200 pt-4 mb-8">
-                  <p className="text-gray-500 text-sm font-medium mb-2">Conditions</p>
+                  <p className="text-gray-500 text-sm font-medium mb-2">{t('toolPages.quote.conditionsLabel')}</p>
                   <p className="text-gray-600 text-sm whitespace-pre-line">{generatedQuote.conditions}</p>
                 </div>
               )}
 
               <div className="mt-8 pt-4 border-t border-gray-200 grid grid-cols-2 gap-8">
                 <div>
-                  <p className="text-gray-500 text-sm mb-2">Bon pour accord - Date et signature client :</p>
+                  <p className="text-gray-500 text-sm mb-2">{t('toolPages.quote.agreementLabel')}</p>
                   <div className="h-20 border border-dashed border-gray-300 rounded"></div>
                 </div>
                 <div className="text-right">
                   {generatedQuote.tvaRate === 0 && (
-                    <p className="text-gray-400 text-xs">TVA non applicable, art. 293 B du CGI</p>
+                    <p className="text-gray-400 text-xs">{t('toolPages.quote.vatNotApplicable')}</p>
                   )}
                 </div>
               </div>
@@ -591,13 +592,13 @@ const QuoteGenerator = () => {
               onClick={() => setGeneratedQuote(null)}
               className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-3 px-6 rounded-lg transition-colors"
             >
-              ← Nouveau devis
+              {t('toolPages.quote.newQuoteBtn')}
             </button>
             <button
               onClick={printQuote}
               className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors"
             >
-              🖨️ Imprimer / PDF
+              {t('toolPages.quote.printPdfBtn')}
             </button>
           </div>
           </>

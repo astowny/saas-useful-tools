@@ -176,5 +176,51 @@ router.post('/cancel', authenticateToken, async (req, res) => {
   }
 });
 
+/**
+ * POST /api/subscription/admin-set-plan
+ * Admin only: directly set the plan without Stripe (for astowny@gmail.com)
+ */
+router.post('/admin-set-plan', authenticateToken, async (req, res) => {
+  try {
+    if (req.user.email !== 'astowny@gmail.com') {
+      return res.status(403).json({ error: { message: 'Forbidden' } });
+    }
+
+    const { planId } = req.body;
+    if (!planId) {
+      return res.status(400).json({ error: { message: 'Plan ID required' } });
+    }
+
+    const planResult = await db.query(
+      'SELECT * FROM subscription_plans WHERE id = $1 AND is_active = true',
+      [planId]
+    );
+    if (planResult.rows.length === 0) {
+      return res.status(404).json({ error: { message: 'Plan not found' } });
+    }
+
+    // Cancel any existing active subscriptions
+    await db.query(
+      "UPDATE user_subscriptions SET status = 'canceled' WHERE user_id = $1 AND status = 'active'",
+      [req.user.id]
+    );
+
+    // Insert new active subscription valid for 10 years
+    const now = new Date();
+    const farFuture = new Date(now.getFullYear() + 10, now.getMonth(), now.getDate());
+    await db.query(
+      `INSERT INTO user_subscriptions
+         (user_id, plan_id, status, billing_cycle, current_period_start, current_period_end, cancel_at_period_end)
+       VALUES ($1, $2, 'active', 'monthly', $3, $4, false)`,
+      [req.user.id, planId, now.toISOString(), farFuture.toISOString()]
+    );
+
+    res.json({ message: 'Plan updated successfully' });
+  } catch (error) {
+    console.error('Admin set plan error:', error);
+    res.status(500).json({ error: { message: 'Error updating plan' } });
+  }
+});
+
 module.exports = router;
 
