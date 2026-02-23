@@ -495,6 +495,99 @@
       "bankDetailsTitle": "Coordonnées bancaires",
       "notesLabel": "Notes"
     }
+  },
+  "enterprise": {
+    "enterpriseOnly": "Cette fonctionnalité nécessite un plan Enterprise.",
+    "upgradeLink": "Passer à Enterprise →",
+    "apiKeys": {
+      "title": "🔑 Clés API",
+      "description": "Générez des clés API pour intégrer Useful Tools dans vos applications.",
+      "empty": "Aucune clé API pour l'instant. Générez votre première clé.",
+      "generate": "Générer une nouvelle clé",
+      "namePlaceholder": "Nom de la clé (ex. Production, CI/CD...)",
+      "prefix": "Préfixe",
+      "created": "Créée le",
+      "lastUsed": "Dernière utilisation",
+      "never": "Jamais",
+      "revoke": "Révoquer",
+      "revokeConfirm": "Révoquer cette clé ? Cette action est irréversible.",
+      "limitReached": "Limite de 10 clés actives atteinte.",
+      "modal": {
+        "title": "🔑 Clé générée !",
+        "warning": "⚠️ Copiez cette clé maintenant — elle ne sera plus affichée.",
+        "copy": "Copier la clé",
+        "copied": "✓ Copié !",
+        "close": "Fermer"
+      }
+    },
+    "support": {
+      "title": "🎫 Tickets de support",
+      "description": "Ouvrez un ticket de support et obtenez une réponse dédiée sous 24h.",
+      "newTicket": "Nouveau ticket",
+      "back": "← Retour aux tickets",
+      "empty": "Aucun ticket de support pour l'instant.",
+      "subject": "Sujet",
+      "subjectPlaceholder": "Décrivez votre problème en quelques mots...",
+      "message": "Message",
+      "messagePlaceholder": "Décrivez votre problème en détail...",
+      "priority": "Priorité",
+      "send": "Envoyer",
+      "reply": "Envoyer la réponse",
+      "replyPlaceholder": "Votre réponse...",
+      "you": "Vous",
+      "staff": "Support",
+      "priorities": {
+        "low": "Faible",
+        "normal": "Normale",
+        "high": "Haute",
+        "urgent": "Urgent"
+      },
+      "status": {
+        "open": "Ouvert",
+        "in_progress": "En cours",
+        "resolved": "Résolu",
+        "closed": "Fermé"
+      },
+      "messages": "messages"
+    },
+    "whiteLabel": {
+      "title": "🎨 White-label",
+      "description": "Personnalisez l'apparence de votre instance Useful Tools.",
+      "appName": "Nom de l'app",
+      "appNamePlaceholder": "Useful Tools",
+      "logoUrl": "URL du logo (optionnel)",
+      "logoUrlPlaceholder": "https://exemple.com/logo.png",
+      "primaryColor": "Couleur principale",
+      "accentColor": "Couleur d'accent",
+      "preview": "Aperçu",
+      "save": "Enregistrer le branding",
+      "saved": "Branding enregistré !"
+    },
+    "sla": {
+      "title": "📊 Dashboard SLA",
+      "description": "Monitoring de disponibilité en temps réel — SLA 99,9% garanti.",
+      "uptime": "Disponibilité",
+      "target": "Objectif SLA",
+      "slaMet": "✅ SLA respecté",
+      "slaNotMet": "❌ SLA non respecté",
+      "currentStatus": "Statut actuel",
+      "avgResponse": "Temps moyen",
+      "totalChecks": "Vérifications",
+      "incidents": "Incidents",
+      "recentChecks": "Vérifications récentes",
+      "incidentsList": "Incidents",
+      "noIncidents": "Aucun incident sur cette période. 🎉",
+      "noData": "Aucune donnée pour l'instant. Les vérifications s'exécutent toutes les minutes.",
+      "period": "Période",
+      "days": "jours",
+      "ms": "ms",
+      "status": {
+        "up": "Opérationnel",
+        "down": "En panne",
+        "degraded": "Dégradé",
+        "unknown": "Inconnu"
+      }
+    }
   }
 }
 

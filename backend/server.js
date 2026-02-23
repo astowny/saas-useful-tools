@@ -67,6 +67,7 @@ if (missingVars.length > 0) {
 
 console.log('✅ Toutes les variables requises sont configurées!\n');
 
+const db = require('./config/database');
 const authRoutes = require('./routes/auth');
 const userRoutes = require('./routes/user');
 const subscriptionRoutes = require('./routes/subscription');
@@ -74,6 +75,10 @@ const usageRoutes = require('./routes/usage');
 const stripeWebhookRoutes = require('./routes/stripe-webhook');
 const toolsRoutes = require('./routes/tools');
 const videoRoutes = require('./routes/video');
+const enterpriseApiKeysRoutes = require('./routes/enterprise-api-keys');
+const enterpriseSupportRoutes = require('./routes/enterprise-support');
+const enterpriseWhiteLabelRoutes = require('./routes/enterprise-white-label');
+const enterpriseSlaRoutes = require('./routes/enterprise-sla');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -152,6 +157,12 @@ app.use('/api/usage', usageRoutes);
 app.use('/api/tools', toolsRoutes);
 app.use('/api/video', videoRoutes);
 
+// Routes Enterprise
+app.use('/api/enterprise/api-keys', enterpriseApiKeysRoutes);
+app.use('/api/enterprise/support', enterpriseSupportRoutes);
+app.use('/api/enterprise/white-label', enterpriseWhiteLabelRoutes);
+app.use('/api/enterprise/sla', enterpriseSlaRoutes);
+
 // Health check
 app.get('/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
@@ -177,6 +188,32 @@ app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
   console.log(`📝 Environment: ${process.env.NODE_ENV}`);
   console.log(`🔗 Frontend URL: ${process.env.FRONTEND_URL}`);
+
+  // ── SLA Health check job (every 60 seconds) ──
+  const runHealthCheck = async () => {
+    const start = Date.now();
+    try {
+      const response = await fetch(`http://localhost:${PORT}/health`);
+      const elapsed = Date.now() - start;
+      const status = response.ok ? 'up' : 'degraded';
+      await db.query(
+        `INSERT INTO uptime_checks (status, response_time_ms, endpoint) VALUES ($1, $2, $3)`,
+        [status, elapsed, '/health']
+      );
+    } catch (err) {
+      const elapsed = Date.now() - start;
+      console.error('Health check failed:', err.message);
+      await db.query(
+        `INSERT INTO uptime_checks (status, response_time_ms, endpoint, error_message) VALUES ($1, $2, $3, $4)`,
+        ['down', elapsed, '/health', err.message]
+      ).catch(() => {});
+    }
+  };
+
+  // Run immediately after boot, then every 60s
+  setTimeout(runHealthCheck, 5000);
+  setInterval(runHealthCheck, 60000);
+  console.log('📊 SLA health check job started (every 60s)');
 });
 
 module.exports = app;

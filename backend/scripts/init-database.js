@@ -120,6 +120,81 @@ CREATE TABLE IF NOT EXISTS payment_history (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- ============================================================
+-- TABLES ENTERPRISE
+-- ============================================================
+
+-- Clés API (API Keys)
+CREATE TABLE IF NOT EXISTS api_keys (
+  id SERIAL PRIMARY KEY,
+  user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+  name VARCHAR(100) NOT NULL,
+  key_hash VARCHAR(64) NOT NULL,
+  key_prefix VARCHAR(10) NOT NULL,
+  last_used_at TIMESTAMP,
+  is_active BOOLEAN DEFAULT TRUE,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Tickets de support
+CREATE TABLE IF NOT EXISTS support_tickets (
+  id SERIAL PRIMARY KEY,
+  user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+  subject VARCHAR(255) NOT NULL,
+  status VARCHAR(50) DEFAULT 'open',
+  priority VARCHAR(20) DEFAULT 'normal',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Messages de tickets support
+CREATE TABLE IF NOT EXISTS support_messages (
+  id SERIAL PRIMARY KEY,
+  ticket_id INTEGER REFERENCES support_tickets(id) ON DELETE CASCADE,
+  user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+  message TEXT NOT NULL,
+  is_staff BOOLEAN DEFAULT FALSE,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Configuration White-label
+CREATE TABLE IF NOT EXISTS white_label_config (
+  id SERIAL PRIMARY KEY,
+  user_id INTEGER REFERENCES users(id) ON DELETE CASCADE UNIQUE,
+  app_name VARCHAR(100) DEFAULT 'Useful Tools',
+  logo_url TEXT,
+  primary_color VARCHAR(7) DEFAULT '#3B82F6',
+  accent_color VARCHAR(7) DEFAULT '#8B5CF6',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Vérifications uptime SLA
+CREATE TABLE IF NOT EXISTS uptime_checks (
+  id SERIAL PRIMARY KEY,
+  checked_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  status VARCHAR(20) NOT NULL,
+  response_time_ms INTEGER,
+  endpoint VARCHAR(255),
+  error_message TEXT
+);
+
+CREATE INDEX IF NOT EXISTS idx_api_keys_user_id ON api_keys(user_id);
+CREATE INDEX IF NOT EXISTS idx_api_keys_hash ON api_keys(key_hash);
+CREATE INDEX IF NOT EXISTS idx_support_tickets_user_id ON support_tickets(user_id);
+CREATE INDEX IF NOT EXISTS idx_support_messages_ticket_id ON support_messages(ticket_id);
+CREATE INDEX IF NOT EXISTS idx_uptime_checks_checked_at ON uptime_checks(checked_at);
+
+-- Trigger updated_at pour support_tickets
+DROP TRIGGER IF EXISTS update_support_tickets_updated_at ON support_tickets;
+CREATE TRIGGER update_support_tickets_updated_at BEFORE UPDATE ON support_tickets
+  FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+-- Trigger updated_at pour white_label_config
+DROP TRIGGER IF EXISTS update_white_label_config_updated_at ON white_label_config;
+CREATE TRIGGER update_white_label_config_updated_at BEFORE UPDATE ON white_label_config
+  FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
 -- Index pour optimiser les requêtes
 CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
 CREATE INDEX IF NOT EXISTS idx_user_subscriptions_user_id ON user_subscriptions(user_id);

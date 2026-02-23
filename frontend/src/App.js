@@ -7,6 +7,8 @@ import Dashboard from './components/Dashboard';
 import PricingPage from './components/PricingPage';
 import Settings from './components/Settings';
 import ToolsPage from './components/ToolsPage';
+import SupportPage from './components/enterprise/SupportPage';
+import SLADashboard from './components/enterprise/SLADashboard';
 import {
   QRGenerator,
   JsonCsvConverter,
@@ -128,6 +130,7 @@ function LoginPage() {
 function Navigation() {
   const { user, logout } = useAuth();
   const { t } = useTranslation();
+  const isEnterprise = user?.plan_name === 'enterprise';
 
   return (
     <nav className="navbar">
@@ -137,6 +140,8 @@ function Navigation() {
           <Link to="/dashboard">{t('nav.dashboard')}</Link>
           <Link to="/tools">{t('nav.tools')}</Link>
           <Link to="/pricing">{t('nav.pricing')}</Link>
+          {isEnterprise && <Link to="/enterprise/support">{t('enterprise.support.title')}</Link>}
+          {isEnterprise && <Link to="/enterprise/sla">{t('enterprise.sla.title')}</Link>}
           <LanguageSwitcher />
           <span className="user-info">{user?.email}</span>
           <button onClick={logout} className="btn-logout">{t('nav.logout')}</button>
@@ -212,6 +217,10 @@ function AppContent() {
 
         {/* AI Tools */}
         <Route path="/tools/video-generator" element={<ProtectedRoute><VideoGenerator /></ProtectedRoute>} />
+
+        {/* Enterprise Tools */}
+        <Route path="/enterprise/support" element={<ProtectedRoute><SupportPage /></ProtectedRoute>} />
+        <Route path="/enterprise/sla" element={<ProtectedRoute><SLADashboard /></ProtectedRoute>} />
 
         <Route path="/pricing" element={
           <ProtectedRoute>

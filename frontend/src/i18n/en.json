@@ -495,6 +495,99 @@
       "bankDetailsTitle": "Bank details",
       "notesLabel": "Notes"
     }
+  },
+  "enterprise": {
+    "enterpriseOnly": "This feature requires an Enterprise plan.",
+    "upgradeLink": "Upgrade to Enterprise →",
+    "apiKeys": {
+      "title": "🔑 API Keys",
+      "description": "Generate API keys to integrate Useful Tools into your apps.",
+      "empty": "No API keys yet. Generate your first key.",
+      "generate": "Generate a new key",
+      "namePlaceholder": "Key name (e.g. Production, CI/CD...)",
+      "prefix": "Prefix",
+      "created": "Created",
+      "lastUsed": "Last used",
+      "never": "Never",
+      "revoke": "Revoke",
+      "revokeConfirm": "Revoke this key? This action is irreversible.",
+      "limitReached": "Limit of 10 active keys reached.",
+      "modal": {
+        "title": "🔑 Key generated!",
+        "warning": "⚠️ Copy this key now — it will NOT be shown again.",
+        "copy": "Copy key",
+        "copied": "✓ Copied!",
+        "close": "Close"
+      }
+    },
+    "support": {
+      "title": "🎫 Support Tickets",
+      "description": "Open a support ticket and get a dedicated response within 24h.",
+      "newTicket": "New ticket",
+      "back": "← Back to tickets",
+      "empty": "No support tickets yet.",
+      "subject": "Subject",
+      "subjectPlaceholder": "Describe your issue in a few words...",
+      "message": "Message",
+      "messagePlaceholder": "Describe your issue in detail...",
+      "priority": "Priority",
+      "send": "Send",
+      "reply": "Send reply",
+      "replyPlaceholder": "Your reply...",
+      "you": "You",
+      "staff": "Support",
+      "priorities": {
+        "low": "Low",
+        "normal": "Normal",
+        "high": "High",
+        "urgent": "Urgent"
+      },
+      "status": {
+        "open": "Open",
+        "in_progress": "In progress",
+        "resolved": "Resolved",
+        "closed": "Closed"
+      },
+      "messages": "messages"
+    },
+    "whiteLabel": {
+      "title": "🎨 White-label",
+      "description": "Customize the branding of your Useful Tools instance.",
+      "appName": "App name",
+      "appNamePlaceholder": "Useful Tools",
+      "logoUrl": "Logo URL (optional)",
+      "logoUrlPlaceholder": "https://example.com/logo.png",
+      "primaryColor": "Primary color",
+      "accentColor": "Accent color",
+      "preview": "Preview",
+      "save": "Save branding",
+      "saved": "Branding saved!"
+    },
+    "sla": {
+      "title": "📊 SLA Dashboard",
+      "description": "Real-time availability monitoring — SLA 99.9% guaranteed.",
+      "uptime": "Uptime",
+      "target": "SLA target",
+      "slaMet": "✅ SLA met",
+      "slaNotMet": "❌ SLA not met",
+      "currentStatus": "Current status",
+      "avgResponse": "Avg. response",
+      "totalChecks": "Total checks",
+      "incidents": "Incidents",
+      "recentChecks": "Recent checks",
+      "incidentsList": "Incidents",
+      "noIncidents": "No incidents in this period. 🎉",
+      "noData": "No data yet. Checks run every minute.",
+      "period": "Period",
+      "days": "days",
+      "ms": "ms",
+      "status": {
+        "up": "Operational",
+        "down": "Down",
+        "degraded": "Degraded",
+        "unknown": "Unknown"
+      }
+    }
   }
 }
 

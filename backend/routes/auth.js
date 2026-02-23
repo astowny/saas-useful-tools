@@ -148,7 +148,21 @@ router.get('/me', authenticateToken, async (req, res) => {
       return res.status(404).json({ error: { message: 'Utilisateur non trouvé' } });
     }
 
-    res.json({ user: result.rows[0] });
+    // Include plan_name so frontend can show/hide Enterprise features
+    const planResult = await db.query(
+      `SELECT sp.name AS plan_name FROM user_subscriptions us
+       JOIN subscription_plans sp ON us.plan_id = sp.id
+       WHERE us.user_id = $1 AND us.status = 'active'
+       ORDER BY us.created_at DESC LIMIT 1`,
+      [req.user.id]
+    );
+
+    res.json({
+      user: {
+        ...result.rows[0],
+        plan_name: planResult.rows[0]?.plan_name || 'free'
+      }
+    });
   } catch (error) {
     console.error('Get user error:', error);
     res.status(500).json({ error: { message: 'Erreur serveur' } });
