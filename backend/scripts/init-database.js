@@ -130,7 +130,7 @@ CREATE TABLE IF NOT EXISTS api_keys (
   user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
   name VARCHAR(100) NOT NULL,
   key_hash VARCHAR(64) NOT NULL,
-  key_prefix VARCHAR(10) NOT NULL,
+  key_prefix VARCHAR(20) NOT NULL,
   last_used_at TIMESTAMP,
   is_active BOOLEAN DEFAULT TRUE,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -179,31 +179,7 @@ CREATE TABLE IF NOT EXISTS uptime_checks (
   error_message TEXT
 );
 
-CREATE INDEX IF NOT EXISTS idx_api_keys_user_id ON api_keys(user_id);
-CREATE INDEX IF NOT EXISTS idx_api_keys_hash ON api_keys(key_hash);
-CREATE INDEX IF NOT EXISTS idx_support_tickets_user_id ON support_tickets(user_id);
-CREATE INDEX IF NOT EXISTS idx_support_messages_ticket_id ON support_messages(ticket_id);
-CREATE INDEX IF NOT EXISTS idx_uptime_checks_checked_at ON uptime_checks(checked_at);
-
--- Trigger updated_at pour support_tickets
-DROP TRIGGER IF EXISTS update_support_tickets_updated_at ON support_tickets;
-CREATE TRIGGER update_support_tickets_updated_at BEFORE UPDATE ON support_tickets
-  FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-
--- Trigger updated_at pour white_label_config
-DROP TRIGGER IF EXISTS update_white_label_config_updated_at ON white_label_config;
-CREATE TRIGGER update_white_label_config_updated_at BEFORE UPDATE ON white_label_config
-  FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-
--- Index pour optimiser les requêtes
-CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
-CREATE INDEX IF NOT EXISTS idx_user_subscriptions_user_id ON user_subscriptions(user_id);
-CREATE INDEX IF NOT EXISTS idx_user_subscriptions_stripe_customer ON user_subscriptions(stripe_customer_id);
-CREATE INDEX IF NOT EXISTS idx_usage_logs_user_id ON usage_logs(user_id);
-CREATE INDEX IF NOT EXISTS idx_usage_logs_timestamp ON usage_logs(timestamp);
-CREATE INDEX IF NOT EXISTS idx_payment_history_user_id ON payment_history(user_id);
-
--- Fonction pour mettre à jour updated_at automatiquement
+-- Fonction pour mettre à jour updated_at automatiquement (définie EN PREMIER)
 CREATE OR REPLACE FUNCTION update_updated_at_column()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -212,6 +188,19 @@ BEGIN
 END;
 $$ language 'plpgsql';
 
+-- Index pour optimiser les requêtes
+CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
+CREATE INDEX IF NOT EXISTS idx_user_subscriptions_user_id ON user_subscriptions(user_id);
+CREATE INDEX IF NOT EXISTS idx_user_subscriptions_stripe_customer ON user_subscriptions(stripe_customer_id);
+CREATE INDEX IF NOT EXISTS idx_usage_logs_user_id ON usage_logs(user_id);
+CREATE INDEX IF NOT EXISTS idx_usage_logs_timestamp ON usage_logs(timestamp);
+CREATE INDEX IF NOT EXISTS idx_payment_history_user_id ON payment_history(user_id);
+CREATE INDEX IF NOT EXISTS idx_api_keys_user_id ON api_keys(user_id);
+CREATE INDEX IF NOT EXISTS idx_api_keys_hash ON api_keys(key_hash);
+CREATE INDEX IF NOT EXISTS idx_support_tickets_user_id ON support_tickets(user_id);
+CREATE INDEX IF NOT EXISTS idx_support_messages_ticket_id ON support_messages(ticket_id);
+CREATE INDEX IF NOT EXISTS idx_uptime_checks_checked_at ON uptime_checks(checked_at);
+
 -- Triggers pour updated_at
 DROP TRIGGER IF EXISTS update_users_updated_at ON users;
 CREATE TRIGGER update_users_updated_at BEFORE UPDATE ON users
@@ -219,6 +208,14 @@ CREATE TRIGGER update_users_updated_at BEFORE UPDATE ON users
 
 DROP TRIGGER IF EXISTS update_user_subscriptions_updated_at ON user_subscriptions;
 CREATE TRIGGER update_user_subscriptions_updated_at BEFORE UPDATE ON user_subscriptions
+  FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+DROP TRIGGER IF EXISTS update_support_tickets_updated_at ON support_tickets;
+CREATE TRIGGER update_support_tickets_updated_at BEFORE UPDATE ON support_tickets
+  FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+DROP TRIGGER IF EXISTS update_white_label_config_updated_at ON white_label_config;
+CREATE TRIGGER update_white_label_config_updated_at BEFORE UPDATE ON white_label_config
   FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 `;
 

@@ -184,10 +184,104 @@ app.use((req, res) => {
   res.status(404).json({ error: { message: 'Route not found' } });
 });
 
+// ── Auto-migration: create enterprise tables if missing ──
+const ensureEnterpriseSchema = async () => {
+  try {
+    // 1. Ensure the trigger function exists first
+    await db.query(`
+      CREATE OR REPLACE FUNCTION update_updated_at_column()
+      RETURNS TRIGGER AS $$
+      BEGIN
+        NEW.updated_at = CURRENT_TIMESTAMP;
+        RETURN NEW;
+      END;
+      $$ language 'plpgsql';
+    `);
+
+    // 2. Create enterprise tables (all idempotent)
+    await db.query(`
+      CREATE TABLE IF NOT EXISTS api_keys (
+        id SERIAL PRIMARY KEY,
+        user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+        name VARCHAR(100) NOT NULL,
+        key_hash VARCHAR(64) NOT NULL,
+        key_prefix VARCHAR(20) NOT NULL,
+        last_used_at TIMESTAMP,
+        is_active BOOLEAN DEFAULT TRUE,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+      CREATE TABLE IF NOT EXISTS support_tickets (
+        id SERIAL PRIMARY KEY,
+        user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+        subject VARCHAR(255) NOT NULL,
+        status VARCHAR(50) DEFAULT 'open',
+        priority VARCHAR(20) DEFAULT 'normal',
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+      CREATE TABLE IF NOT EXISTS support_messages (
+        id SERIAL PRIMARY KEY,
+        ticket_id INTEGER REFERENCES support_tickets(id) ON DELETE CASCADE,
+        user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+        message TEXT NOT NULL,
+        is_staff BOOLEAN DEFAULT FALSE,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+      CREATE TABLE IF NOT EXISTS white_label_config (
+        id SERIAL PRIMARY KEY,
+        user_id INTEGER REFERENCES users(id) ON DELETE CASCADE UNIQUE,
+        app_name VARCHAR(100) DEFAULT 'Useful Tools',
+        logo_url TEXT,
+        primary_color VARCHAR(7) DEFAULT '#3B82F6',
+        accent_color VARCHAR(7) DEFAULT '#8B5CF6',
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+      CREATE TABLE IF NOT EXISTS uptime_checks (
+        id SERIAL PRIMARY KEY,
+        checked_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        status VARCHAR(20) NOT NULL,
+        response_time_ms INTEGER,
+        endpoint VARCHAR(255),
+        error_message TEXT
+      );
+    `);
+
+    // 3. Fix key_prefix column if it was created with old VARCHAR(10)
+    await db.query(`ALTER TABLE api_keys ALTER COLUMN key_prefix TYPE VARCHAR(20);`).catch(() => {});
+
+    // 4. Indexes
+    await db.query(`
+      CREATE INDEX IF NOT EXISTS idx_api_keys_user_id ON api_keys(user_id);
+      CREATE INDEX IF NOT EXISTS idx_api_keys_hash ON api_keys(key_hash);
+      CREATE INDEX IF NOT EXISTS idx_support_tickets_user_id ON support_tickets(user_id);
+      CREATE INDEX IF NOT EXISTS idx_support_messages_ticket_id ON support_messages(ticket_id);
+      CREATE INDEX IF NOT EXISTS idx_uptime_checks_checked_at ON uptime_checks(checked_at);
+    `);
+
+    // 5. Triggers (DROP IF EXISTS first to avoid duplicates)
+    await db.query(`
+      DROP TRIGGER IF EXISTS update_support_tickets_updated_at ON support_tickets;
+      CREATE TRIGGER update_support_tickets_updated_at BEFORE UPDATE ON support_tickets
+        FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+      DROP TRIGGER IF EXISTS update_white_label_config_updated_at ON white_label_config;
+      CREATE TRIGGER update_white_label_config_updated_at BEFORE UPDATE ON white_label_config
+        FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+    `);
+
+    console.log('✅ Enterprise schema ready');
+  } catch (err) {
+    console.error('❌ Enterprise schema migration error:', err.message);
+  }
+};
+
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
   console.log(`📝 Environment: ${process.env.NODE_ENV}`);
   console.log(`🔗 Frontend URL: ${process.env.FRONTEND_URL}`);
+
+  // Run enterprise schema migration on every startup (idempotent)
+  ensureEnterpriseSchema();
 
   // ── SLA Health check job (every 60 seconds) ──
   const runHealthCheck = async () => {
