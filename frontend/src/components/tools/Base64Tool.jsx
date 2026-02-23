@@ -1,12 +1,16 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useQuota } from '../../hooks/useQuota';
 
 const Base64Tool = () => {
+  const { checkAndUseQuota, isChecking, quotaError } = useQuota();
   const [input, setInput] = useState('');
   const [output, setOutput] = useState('');
   const [mode, setMode] = useState('encode');
 
-  const handleEncode = () => {
+  const handleEncode = async () => {
+    const result = await checkAndUseQuota('base64-tool', 'developer');
+    if (!result.success) return;
     try {
       const encoded = btoa(unescape(encodeURIComponent(input)));
       setOutput(encoded);
@@ -15,7 +19,9 @@ const Base64Tool = () => {
     }
   };
 
-  const handleDecode = () => {
+  const handleDecode = async () => {
+    const result = await checkAndUseQuota('base64-tool', 'developer');
+    if (!result.success) return;
     try {
       const decoded = decodeURIComponent(escape(atob(input)));
       setOutput(decoded);
@@ -39,6 +45,23 @@ const Base64Tool = () => {
           <h1 className="text-4xl font-bold text-gray-900 mb-2">🔤 Base64 Encoder/Decoder</h1>
           <p className="text-gray-600">Encodez et décodez du texte en Base64</p>
         </div>
+
+        {quotaError && (
+          <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+            <div className="flex items-start gap-3">
+              <span className="text-2xl">⛔</span>
+              <div className="flex-1">
+                <h3 className="font-semibold text-red-900 mb-1">Limite atteinte</h3>
+                <p className="text-sm text-red-800">{quotaError.message}</p>
+                {quotaError.type === 'NO_SUBSCRIPTION' && (
+                  <Link to="/pricing" className="inline-block mt-2 text-sm font-semibold text-red-700 underline hover:text-red-600">
+                    Voir les plans disponibles →
+                  </Link>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
 
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
           <div className="flex gap-4 mb-6">
@@ -75,9 +98,10 @@ const Base64Tool = () => {
 
           <button
             onClick={mode === 'encode' ? handleEncode : handleDecode}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors mb-4"
+            disabled={isChecking}
+            className="w-full bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white font-semibold py-3 px-6 rounded-lg transition-colors mb-4"
           >
-            {mode === 'encode' ? 'Encoder' : 'Décoder'}
+            {isChecking ? 'Vérification...' : mode === 'encode' ? 'Encoder' : 'Décoder'}
           </button>
 
           {output && (

@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useQuota } from '../../hooks/useQuota';
 
 const HashGenerator = () => {
+  const { checkAndUseQuota, isChecking, quotaError } = useQuota();
   const [input, setInput] = useState('');
   const [hashes, setHashes] = useState({});
 
@@ -14,6 +16,8 @@ const HashGenerator = () => {
   };
 
   const handleGenerate = async () => {
+    const result = await checkAndUseQuota('hash-generator', 'developer');
+    if (!result.success) return;
     if (!input.trim()) {
       alert('Veuillez entrer du texte');
       return;
@@ -44,6 +48,23 @@ const HashGenerator = () => {
           <p className="text-gray-600">Générez des hash SHA-1, SHA-256, SHA-384, SHA-512</p>
         </div>
 
+        {quotaError && (
+          <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+            <div className="flex items-start gap-3">
+              <span className="text-2xl">⛔</span>
+              <div className="flex-1">
+                <h3 className="font-semibold text-red-900 mb-1">Limite atteinte</h3>
+                <p className="text-sm text-red-800">{quotaError.message}</p>
+                {quotaError.type === 'NO_SUBSCRIPTION' && (
+                  <Link to="/pricing" className="inline-block mt-2 text-sm font-semibold text-red-700 underline hover:text-red-600">
+                    Voir les plans disponibles →
+                  </Link>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
           <div className="mb-4">
             <label className="block text-sm font-medium text-gray-700 mb-2">Texte à hasher</label>
@@ -58,9 +79,10 @@ const HashGenerator = () => {
 
           <button
             onClick={handleGenerate}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors"
+            disabled={isChecking}
+            className="w-full bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white font-semibold py-3 px-6 rounded-lg transition-colors"
           >
-            Générer les hash
+            {isChecking ? 'Vérification...' : 'Générer les hash'}
           </button>
         </div>
 

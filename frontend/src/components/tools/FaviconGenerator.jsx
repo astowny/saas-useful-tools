@@ -1,7 +1,9 @@
 import React, { useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
+import { useQuota } from '../../hooks/useQuota';
 
 const FaviconGenerator = () => {
+  const { checkAndUseQuota, isChecking, quotaError } = useQuota();
   const [text, setText] = useState('A');
   const [bgColor, setBgColor] = useState('#3B82F6');
   const [textColor, setTextColor] = useState('#FFFFFF');
@@ -9,7 +11,9 @@ const FaviconGenerator = () => {
   const [favicon, setFavicon] = useState('');
   const canvasRef = useRef(null);
 
-  const generateFavicon = () => {
+  const generateFavicon = async () => {
+    const result = await checkAndUseQuota('favicon-generator', 'design');
+    if (!result.success) return;
     const canvas = canvasRef.current;
     const ctx = canvas.getContext('2d');
     
@@ -50,6 +54,23 @@ const FaviconGenerator = () => {
           <h1 className="text-4xl font-bold text-gray-900 mb-2">🖼️ Générateur de Favicon</h1>
           <p className="text-gray-600">Créez un favicon simple avec une lettre</p>
         </div>
+
+        {quotaError && (
+          <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+            <div className="flex items-start gap-3">
+              <span className="text-2xl">⛔</span>
+              <div className="flex-1">
+                <h3 className="font-semibold text-red-900 mb-1">Limite atteinte</h3>
+                <p className="text-sm text-red-800">{quotaError.message}</p>
+                {quotaError.type === 'NO_SUBSCRIPTION' && (
+                  <Link to="/pricing" className="inline-block mt-2 text-sm font-semibold text-red-700 underline hover:text-red-600">
+                    Voir les plans disponibles →
+                  </Link>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
 
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
           <canvas ref={canvasRef} width="64" height="64" className="hidden" />
@@ -120,9 +141,10 @@ const FaviconGenerator = () => {
 
           <button
             onClick={generateFavicon}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors mb-6"
+            disabled={isChecking}
+            className="w-full bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white font-semibold py-3 px-6 rounded-lg transition-colors mb-6"
           >
-            Générer Favicon
+            {isChecking ? 'Vérification...' : 'Générer Favicon'}
           </button>
 
           {favicon && (

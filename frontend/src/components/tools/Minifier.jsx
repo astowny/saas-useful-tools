@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useQuota } from '../../hooks/useQuota';
 
 const Minifier = () => {
+  const { checkAndUseQuota, isChecking, quotaError } = useQuota();
   const [input, setInput] = useState('');
   const [output, setOutput] = useState('');
   const [mode, setMode] = useState('css');
@@ -28,7 +30,9 @@ const Minifier = () => {
       .trim();
   };
 
-  const handleMinify = () => {
+  const handleMinify = async () => {
+    const result = await checkAndUseQuota('minifier', 'developer');
+    if (!result.success) return;
     const minified = mode === 'css' ? minifyCSS(input) : minifyJS(input);
     setOutput(minified);
     
@@ -58,6 +62,23 @@ const Minifier = () => {
           <h1 className="text-4xl font-bold text-gray-900 mb-2">📦 Minifieur CSS/JS</h1>
           <p className="text-gray-600">Compresse votre code CSS ou JavaScript</p>
         </div>
+
+        {quotaError && (
+          <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+            <div className="flex items-start gap-3">
+              <span className="text-2xl">⛔</span>
+              <div className="flex-1">
+                <h3 className="font-semibold text-red-900 mb-1">Limite atteinte</h3>
+                <p className="text-sm text-red-800">{quotaError.message}</p>
+                {quotaError.type === 'NO_SUBSCRIPTION' && (
+                  <Link to="/pricing" className="inline-block mt-2 text-sm font-semibold text-red-700 underline hover:text-red-600">
+                    Voir les plans disponibles →
+                  </Link>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
 
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
           <div className="flex gap-4 mb-6">
@@ -114,9 +135,10 @@ const Minifier = () => {
 
           <button
             onClick={handleMinify}
-            className="w-full mt-6 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors"
+            disabled={isChecking}
+            className="w-full mt-6 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white font-semibold py-3 px-6 rounded-lg transition-colors"
           >
-            Minifier
+            {isChecking ? 'Vérification...' : 'Minifier'}
           </button>
 
           {stats && (

@@ -1,12 +1,16 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useQuota } from '../../hooks/useQuota';
 
 const TextDiff = () => {
+  const { checkAndUseQuota, isChecking, quotaError } = useQuota();
   const [text1, setText1] = useState('');
   const [text2, setText2] = useState('');
   const [diffResult, setDiffResult] = useState([]);
 
-  const computeDiff = () => {
+  const computeDiff = async () => {
+    const quotaResult = await checkAndUseQuota('text-diff', 'developer');
+    if (!quotaResult.success) return;
     const lines1 = text1.split('\n');
     const lines2 = text2.split('\n');
     const maxLines = Math.max(lines1.length, lines2.length);
@@ -42,6 +46,23 @@ const TextDiff = () => {
           <p className="text-gray-600">Compare deux textes ligne par ligne</p>
         </div>
 
+        {quotaError && (
+          <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+            <div className="flex items-start gap-3">
+              <span className="text-2xl">⛔</span>
+              <div className="flex-1">
+                <h3 className="font-semibold text-red-900 mb-1">Limite atteinte</h3>
+                <p className="text-sm text-red-800">{quotaError.message}</p>
+                {quotaError.type === 'NO_SUBSCRIPTION' && (
+                  <Link to="/pricing" className="inline-block mt-2 text-sm font-semibold text-red-700 underline hover:text-red-600">
+                    Voir les plans disponibles →
+                  </Link>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
             <div>
@@ -69,9 +90,10 @@ const TextDiff = () => {
 
           <button
             onClick={computeDiff}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors"
+            disabled={isChecking}
+            className="w-full bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white font-semibold py-3 px-6 rounded-lg transition-colors"
           >
-            Comparer
+            {isChecking ? 'Vérification...' : 'Comparer'}
           </button>
         </div>
 

@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useQuota } from '../../hooks/useQuota';
 
 const ColorPalette = () => {
+  const { checkAndUseQuota, isChecking, quotaError } = useQuota();
   const [baseColor, setBaseColor] = useState('#3B82F6');
   const [palette, setPalette] = useState([]);
 
@@ -21,7 +23,9 @@ const ColorPalette = () => {
     }).join('');
   };
 
-  const generateMonochromatic = () => {
+  const generateMonochromatic = async () => {
+    const result = await checkAndUseQuota('color-palette', 'design');
+    if (!result.success) return;
     const rgb = hexToRgb(baseColor);
     const colors = [];
     for (let i = 0; i < 5; i++) {
@@ -31,7 +35,9 @@ const ColorPalette = () => {
     setPalette(colors);
   };
 
-  const generateComplementary = () => {
+  const generateComplementary = async () => {
+    const result = await checkAndUseQuota('color-palette', 'design');
+    if (!result.success) return;
     const rgb = hexToRgb(baseColor);
     setPalette([
       baseColor,
@@ -39,7 +45,9 @@ const ColorPalette = () => {
     ]);
   };
 
-  const generateAnalogous = () => {
+  const generateAnalogous = async () => {
+    const result = await checkAndUseQuota('color-palette', 'design');
+    if (!result.success) return;
     const rgb = hexToRgb(baseColor);
     setPalette([
       rgbToHex(rgb.r, rgb.g * 0.8, rgb.b * 1.2),
@@ -48,7 +56,9 @@ const ColorPalette = () => {
     ]);
   };
 
-  const generateTriadic = () => {
+  const generateTriadic = async () => {
+    const result = await checkAndUseQuota('color-palette', 'design');
+    if (!result.success) return;
     const rgb = hexToRgb(baseColor);
     setPalette([
       baseColor,
@@ -73,6 +83,23 @@ const ColorPalette = () => {
           <p className="text-gray-600">Créez des palettes de couleurs harmonieuses</p>
         </div>
 
+        {quotaError && (
+          <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+            <div className="flex items-start gap-3">
+              <span className="text-2xl">⛔</span>
+              <div className="flex-1">
+                <h3 className="font-semibold text-red-900 mb-1">Limite atteinte</h3>
+                <p className="text-sm text-red-800">{quotaError.message}</p>
+                {quotaError.type === 'NO_SUBSCRIPTION' && (
+                  <Link to="/pricing" className="inline-block mt-2 text-sm font-semibold text-red-700 underline hover:text-red-600">
+                    Voir les plans disponibles →
+                  </Link>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
           <div className="mb-6">
             <label className="block text-sm font-medium text-gray-700 mb-2">Couleur de base</label>
@@ -96,27 +123,31 @@ const ColorPalette = () => {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             <button
               onClick={generateMonochromatic}
-              className="py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors"
+              disabled={isChecking}
+              className="py-3 px-4 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white font-semibold rounded-lg transition-colors"
             >
-              Monochromatique
+              {isChecking ? '...' : 'Monochromatique'}
             </button>
             <button
               onClick={generateComplementary}
-              className="py-3 px-4 bg-purple-600 hover:bg-purple-700 text-white font-semibold rounded-lg transition-colors"
+              disabled={isChecking}
+              className="py-3 px-4 bg-purple-600 hover:bg-purple-700 disabled:opacity-50 text-white font-semibold rounded-lg transition-colors"
             >
-              Complémentaire
+              {isChecking ? '...' : 'Complémentaire'}
             </button>
             <button
               onClick={generateAnalogous}
-              className="py-3 px-4 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg transition-colors"
+              disabled={isChecking}
+              className="py-3 px-4 bg-green-600 hover:bg-green-700 disabled:opacity-50 text-white font-semibold rounded-lg transition-colors"
             >
-              Analogue
+              {isChecking ? '...' : 'Analogue'}
             </button>
             <button
               onClick={generateTriadic}
-              className="py-3 px-4 bg-orange-600 hover:bg-orange-700 text-white font-semibold rounded-lg transition-colors"
+              disabled={isChecking}
+              className="py-3 px-4 bg-orange-600 hover:bg-orange-700 disabled:opacity-50 text-white font-semibold rounded-lg transition-colors"
             >
-              Triadique
+              {isChecking ? '...' : 'Triadique'}
             </button>
           </div>
         </div>
