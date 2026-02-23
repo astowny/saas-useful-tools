@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useQuota } from '../../hooks/useQuota';
@@ -23,7 +23,7 @@ const Minifier = () => {
       .replace(/\/\/.*$/gm, '')
       .replace(/\/\*[\s\S]*?\*\//g, '')
       .replace(/\s+/g, ' ')
-      .replace(/\s*([{}:;,=()\[\]<>!&|?])\s*/g, '$1')
+      .replace(/\s*([{}:;,=()[\]<>!&|?])\s*/g, '$1')
       .trim();
   };
 
