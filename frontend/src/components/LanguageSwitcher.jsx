@@ -10,13 +10,15 @@ const LanguageSwitcher = () => {
     localStorage.setItem('lang', next);
   };
 
+  const isEn = i18n.language?.startsWith('en');
+
   return (
     <button
       onClick={toggle}
-      className="px-3 py-1 text-sm font-medium border border-gray-300 rounded-lg hover:bg-gray-100 transition-colors"
-      title={i18n.language === 'en' ? 'Switch to French' : 'Passer en anglais'}
+      className="flex items-center gap-1 px-3 py-1.5 text-sm font-semibold bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-full border border-gray-200 transition-colors"
+      title={isEn ? 'Switch to French' : 'Switch to English'}
     >
-      {i18n.language === 'en' ? '🇫🇷 FR' : '🇬🇧 EN'}
+      {isEn ? '🇫🇷 FR' : '🇬🇧 EN'}
     </button>
   );
 };
