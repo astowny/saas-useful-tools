@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../contexts/AuthContext';
+import { useTranslation } from 'react-i18next';
 
 const PricingPage = () => {
   const { token, isAuthenticated } = useAuth();
+  const { t } = useTranslation();
   const [plans, setPlans] = useState([]);
   const [billingCycle, setBillingCycle] = useState('monthly');
   const [loading, setLoading] = useState(true);
@@ -55,7 +57,7 @@ const PricingPage = () => {
       }
     } catch (err) {
       console.error('Error creating checkout session:', err);
-      alert('Erreur lors de la création de la session de paiement');
+      alert(t('pricing.errorCheckout'));
     } finally {
       setProcessingPlanId(null);
     }
@@ -75,10 +77,10 @@ const PricingPage = () => {
         {/* Header */}
         <div className="text-center mb-12">
           <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
-            Choisissez votre plan
+            {t('pricing.title')}
           </h1>
           <p className="text-xl text-gray-300">
-            Des outils puissants pour tous vos besoins
+            {t('pricing.subtitle')}
           </p>
         </div>
 
@@ -93,7 +95,7 @@ const PricingPage = () => {
                   : 'text-gray-300 hover:text-white'
               }`}
             >
-              Mensuel
+              {t('pricing.monthly')}
             </button>
             <button
               onClick={() => setBillingCycle('yearly')}
@@ -103,7 +105,7 @@ const PricingPage = () => {
                   : 'text-gray-300 hover:text-white'
               }`}
             >
-              Annuel
+              {t('pricing.yearly')}
               <span className="ml-2 text-xs bg-green-500 text-white px-2 py-1 rounded">
                 -17%
               </span>
@@ -127,7 +129,7 @@ const PricingPage = () => {
                 {isPro && (
                   <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
                     <span className="bg-blue-500 text-white px-4 py-1 rounded-full text-sm font-semibold">
-                      Populaire
+                      {t('pricing.popular')}
                     </span>
                   </div>
                 )}
@@ -137,7 +139,7 @@ const PricingPage = () => {
                 <div className="mb-6">
                   <span className="text-4xl font-bold text-white">{price}€</span>
                   <span className="text-gray-400">
-                    /{billingCycle === 'monthly' ? 'mois' : 'an'}
+                    {billingCycle === 'monthly' ? t('pricing.perMonth') : t('pricing.perYear')}
                   </span>
                 </div>
 
@@ -162,11 +164,11 @@ const PricingPage = () => {
                   }`}
                 >
                   {processingPlanId === plan.id ? (
-                    'Chargement...'
+                    t('pricing.loading')
                   ) : plan.name === 'free' ? (
-                    'Plan actuel'
+                    t('pricing.currentPlan')
                   ) : (
-                    'Choisir ce plan'
+                    t('pricing.choosePlan')
                   )}
                 </button>
               </div>

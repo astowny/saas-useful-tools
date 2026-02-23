@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
+import LanguageSwitcher from './components/LanguageSwitcher';
 import Dashboard from './components/Dashboard';
 import PricingPage from './components/PricingPage';
 import Settings from './components/Settings';
@@ -34,6 +36,7 @@ import './App.css';
 // Composant de connexion
 function LoginPage() {
   const { login, register } = useAuth();
+  const { t } = useTranslation();
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -54,7 +57,7 @@ function LoginPage() {
       }
       window.location.href = '/dashboard';
     } catch (err) {
-      setError(err.message || 'Une erreur est survenue');
+      setError(err.message || t('auth.error'));
     } finally {
       setLoading(false);
     }
@@ -64,14 +67,14 @@ function LoginPage() {
     <div className="login-container">
       <div className="login-box">
         <h1>🛠️ Useful Tools SaaS</h1>
-        <h2>{isLogin ? 'Connexion' : 'Inscription'}</h2>
-        
+        <h2>{isLogin ? t('auth.loginTitle') : t('auth.registerTitle')}</h2>
+
         {error && <div className="error-message">{error}</div>}
-        
+
         <form onSubmit={handleSubmit}>
           {!isLogin && (
             <div className="form-group">
-              <label>Nom complet</label>
+              <label>{t('auth.fullName')}</label>
               <input
                 type="text"
                 value={fullName}
@@ -81,9 +84,9 @@ function LoginPage() {
               />
             </div>
           )}
-          
+
           <div className="form-group">
-            <label>Email</label>
+            <label>{t('auth.email')}</label>
             <input
               type="email"
               value={email}
@@ -92,9 +95,9 @@ function LoginPage() {
               placeholder="email@example.com"
             />
           </div>
-          
+
           <div className="form-group">
-            <label>Mot de passe</label>
+            <label>{t('auth.password')}</label>
             <input
               type="password"
               value={password}
@@ -104,16 +107,16 @@ function LoginPage() {
               minLength="6"
             />
           </div>
-          
+
           <button type="submit" disabled={loading} className="btn-primary">
-            {loading ? 'Chargement...' : (isLogin ? 'Se connecter' : "S'inscrire")}
+            {loading ? t('auth.loading') : (isLogin ? t('auth.login') : t('auth.register'))}
           </button>
         </form>
-        
+
         <p className="toggle-form">
-          {isLogin ? "Pas encore de compte ?" : "Déjà un compte ?"}
+          {isLogin ? t('auth.noAccount') : t('auth.alreadyAccount')}
           <button onClick={() => setIsLogin(!isLogin)} className="btn-link">
-            {isLogin ? "S'inscrire" : "Se connecter"}
+            {isLogin ? t('auth.register') : t('auth.login')}
           </button>
         </p>
       </div>
@@ -124,17 +127,19 @@ function LoginPage() {
 // Composant de navigation
 function Navigation() {
   const { user, logout } = useAuth();
+  const { t } = useTranslation();
 
   return (
     <nav className="navbar">
       <div className="nav-container">
-        <Link to="/dashboard" className="nav-brand">🛠️ Useful Tools</Link>
+        <Link to="/dashboard" className="nav-brand">{t('nav.brand')}</Link>
         <div className="nav-links">
-          <Link to="/dashboard">Dashboard</Link>
-          <Link to="/tools">Outils</Link>
-          <Link to="/pricing">Pricing</Link>
+          <Link to="/dashboard">{t('nav.dashboard')}</Link>
+          <Link to="/tools">{t('nav.tools')}</Link>
+          <Link to="/pricing">{t('nav.pricing')}</Link>
+          <LanguageSwitcher />
           <span className="user-info">{user?.email}</span>
-          <button onClick={logout} className="btn-logout">Déconnexion</button>
+          <button onClick={logout} className="btn-logout">{t('nav.logout')}</button>
         </div>
       </div>
     </nav>
@@ -144,9 +149,10 @@ function Navigation() {
 // Route protégée
 function ProtectedRoute({ children }) {
   const { isAuthenticated, loading } = useAuth();
+  const { t } = useTranslation();
 
   if (loading) {
-    return <div className="loading">Chargement...</div>;
+    return <div className="loading">{t('common.loading')}</div>;
   }
 
   return isAuthenticated ? children : <Navigate to="/login" />;
@@ -155,6 +161,7 @@ function ProtectedRoute({ children }) {
 // App principal
 function AppContent() {
   const { isAuthenticated } = useAuth();
+  const { t } = useTranslation();
 
   return (
     <Router>
@@ -192,7 +199,7 @@ function AppContent() {
         <Route path="/tools/freelance-calculator" element={<ProtectedRoute><FreelanceCalculator /></ProtectedRoute>} />
         <Route path="/tools/invoice-generator" element={<ProtectedRoute><InvoiceGenerator /></ProtectedRoute>} />
         <Route path="/tools/quote-generator" element={<ProtectedRoute><QuoteGenerator /></ProtectedRoute>} />
-        <Route path="/tools/kanban" element={<ProtectedRoute><ToolComingSoon icon="📊" title="Kanban Board" description="Gestion de tâches" /></ProtectedRoute>} />
+        <Route path="/tools/kanban" element={<ProtectedRoute><ToolComingSoon icon="📊" title="Kanban Board" description={t('tools.list.kanban.desc')} /></ProtectedRoute>} />
         <Route path="/tools/markdown-editor" element={<ProtectedRoute><MarkdownEditor /></ProtectedRoute>} />
 
         {/* Security Tools */}

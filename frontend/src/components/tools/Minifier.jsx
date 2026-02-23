@@ -1,172 +1,141 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useQuota } from '../../hooks/useQuota';
 
 const Minifier = () => {
+  const { t } = useTranslation();
   const { checkAndUseQuota, isChecking, quotaError } = useQuota();
   const [input, setInput] = useState('');
   const [output, setOutput] = useState('');
-  const [mode, setMode] = useState('css');
-  const [stats, setStats] = useState(null);
+  const [type, setType] = useState('css');
 
   const minifyCSS = (css) => {
     return css
-      .replace(/\/\*[\s\S]*?\*\//g, '') // Remove comments
-      .replace(/\s+/g, ' ') // Replace multiple spaces with single space
-      .replace(/\s*{\s*/g, '{') // Remove spaces around {
-      .replace(/\s*}\s*/g, '}') // Remove spaces around }
-      .replace(/\s*:\s*/g, ':') // Remove spaces around :
-      .replace(/\s*;\s*/g, ';') // Remove spaces around ;
-      .replace(/;}/g, '}') // Remove last semicolon
+      .replace(/\/\*[\s\S]*?\*\//g, '')
+      .replace(/\s+/g, ' ')
+      .replace(/\s*([{}:;,>+~])\s*/g, '$1')
       .trim();
   };
 
   const minifyJS = (js) => {
     return js
-      .replace(/\/\*[\s\S]*?\*\//g, '') // Remove multi-line comments
-      .replace(/\/\/.*/g, '') // Remove single-line comments
-      .replace(/\s+/g, ' ') // Replace multiple spaces with single space
-      .replace(/\s*([{}();,:])\s*/g, '$1') // Remove spaces around operators
+      .replace(/\/\/.*$/gm, '')
+      .replace(/\/\*[\s\S]*?\*\//g, '')
+      .replace(/\s+/g, ' ')
+      .replace(/\s*([{}:;,=()\[\]<>!&|?])\s*/g, '$1')
       .trim();
   };
 
   const handleMinify = async () => {
-    const result = await checkAndUseQuota('minifier', 'developer');
+    const result = await checkAndUseQuota('minifier', 'productivity');
     if (!result.success) return;
-    const minified = mode === 'css' ? minifyCSS(input) : minifyJS(input);
-    setOutput(minified);
-    
-    const originalSize = new Blob([input]).size;
-    const minifiedSize = new Blob([minified]).size;
-    const reduction = ((originalSize - minifiedSize) / originalSize * 100).toFixed(2);
-    
-    setStats({
-      original: originalSize,
-      minified: minifiedSize,
-      reduction: reduction
-    });
+
+    if (!input.trim()) {
+      alert(t('toolPages.minifier.minifyBtn'));
+      return;
+    }
+
+    try {
+      const minified = type === 'css' ? minifyCSS(input) : minifyJS(input);
+      setOutput(minified);
+    } catch (error) {
+      alert(t('common.error'));
+    }
   };
 
   const copyToClipboard = () => {
+    if (!output) return;
     navigator.clipboard.writeText(output);
+    alert(t('common.copied'));
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="container mx-auto px-4 py-8 max-w-6xl">
-        <Link to="/tools" className="text-blue-600 hover:text-blue-700 mb-6 inline-flex items-center gap-2">
-          ← Retour aux outils
+    <div className='min-h-screen bg-gray-50'>
+      <div className='container mx-auto px-4 py-8 max-w-4xl'>
+        <Link to='/tools' className='text-blue-600 hover:text-blue-700 mb-6 inline-flex items-center gap-2'>
+          {t('common.backToTools')}
         </Link>
-        
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">📦 Minifieur CSS/JS</h1>
-          <p className="text-gray-600">Compresse votre code CSS ou JavaScript</p>
+        <div className='mb-8'>
+          <h1 className='text-4xl font-bold text-gray-900 mb-2'>{t('toolPages.minifier.title')}</h1>
+          <p className='text-gray-600'>{t('toolPages.minifier.subtitle')}</p>
         </div>
-
         {quotaError && (
-          <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
-            <div className="flex items-start gap-3">
-              <span className="text-2xl">⛔</span>
-              <div className="flex-1">
-                <h3 className="font-semibold text-red-900 mb-1">Limite atteinte</h3>
-                <p className="text-sm text-red-800">{quotaError.message}</p>
+          <div className='mb-6 p-4 bg-red-50 border border-red-200 rounded-lg'>
+            <div className='flex items-start gap-3'>
+              <span className='text-2xl'>⛔</span>
+              <div className='flex-1'>
+                <h3 className='font-semibold text-red-900 mb-1'>{t('common.limitReached')}</h3>
+                <p className='text-sm text-red-800'>{quotaError.message}</p>
                 {quotaError.type === 'NO_SUBSCRIPTION' && (
-                  <Link to="/pricing" className="inline-block mt-2 text-sm font-semibold text-red-700 underline hover:text-red-600">
-                    Voir les plans disponibles →
+                  <Link to='/pricing' className='inline-block mt-2 text-sm font-semibold text-red-700 underline hover:text-red-600'>
+                    {t('common.viewPlans')}
                   </Link>
                 )}
               </div>
             </div>
           </div>
         )}
-
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
-          <div className="flex gap-4 mb-6">
-            <button
-              onClick={() => setMode('css')}
-              className={`flex-1 py-3 px-6 rounded-lg font-semibold transition-colors ${
-                mode === 'css' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-              }`}
-            >
-              CSS
-            </button>
-            <button
-              onClick={() => setMode('js')}
-              className={`flex-1 py-3 px-6 rounded-lg font-semibold transition-colors ${
-                mode === 'js' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-              }`}
-            >
-              JavaScript
-            </button>
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Code original</label>
-              <textarea
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-gray-900 font-mono text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                rows="15"
-                placeholder={mode === 'css' ? '.class {\n  color: red;\n  margin: 10px;\n}' : 'function hello() {\n  console.log("Hello");\n}'}
-              />
+        <div className='bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6'>
+          <div className='mb-4'>
+            <div className='flex gap-4 mb-4'>
+              <label className='flex items-center gap-2 cursor-pointer'>
+                <input
+                  type='radio'
+                  name='type'
+                  value='css'
+                  checked={type === 'css'}
+                  onChange={(e) => setType(e.target.value)}
+                  className='w-4 h-4'
+                />
+                <span className='text-sm text-gray-700'>CSS</span>
+              </label>
+              <label className='flex items-center gap-2 cursor-pointer'>
+                <input
+                  type='radio'
+                  name='type'
+                  value='js'
+                  checked={type === 'js'}
+                  onChange={(e) => setType(e.target.value)}
+                  className='w-4 h-4'
+                />
+                <span className='text-sm text-gray-700'>JavaScript</span>
+              </label>
             </div>
-
-            <div>
-              <div className="flex items-center justify-between mb-2">
-                <label className="block text-sm font-medium text-gray-700">Code minifié</label>
-                {output && (
-                  <button
-                    onClick={copyToClipboard}
-                    className="text-blue-600 hover:text-blue-700 text-sm"
-                  >
-                    📋 Copier
-                  </button>
-                )}
-              </div>
-              <textarea
-                value={output}
-                readOnly
-                className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg text-gray-900 font-mono text-sm"
-                rows="15"
-              />
-            </div>
+            <label className='block text-sm font-medium text-gray-700 mb-2'>{t('toolPages.minifier.originalCode')}</label>
+            <textarea
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              className='w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent'
+              rows='8'
+              placeholder={t('toolPages.minifier.originalCode')}
+            />
           </div>
-
           <button
             onClick={handleMinify}
             disabled={isChecking}
-            className="w-full mt-6 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white font-semibold py-3 px-6 rounded-lg transition-colors"
+            className='w-full bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white font-semibold py-3 px-6 rounded-lg transition-colors mb-4'
           >
-            {isChecking ? 'Vérification...' : 'Minifier'}
+            {isChecking ? t('common.verifying') : t('toolPages.minifier.minifyBtn')}
           </button>
-
-          {stats && (
-            <div className="mt-6 p-4 bg-green-50 border border-green-200 rounded-lg">
-              <h3 className="font-semibold text-green-900 mb-2">📊 Statistiques</h3>
-              <div className="grid grid-cols-3 gap-4 text-sm text-green-800">
-                <div>
-                  <div className="font-medium">Taille originale</div>
-                  <div className="text-lg font-bold">{stats.original} octets</div>
-                </div>
-                <div>
-                  <div className="font-medium">Taille minifiée</div>
-                  <div className="text-lg font-bold">{stats.minified} octets</div>
-                </div>
-                <div>
-                  <div className="font-medium">Réduction</div>
-                  <div className="text-lg font-bold">{stats.reduction}%</div>
-                </div>
-              </div>
-            </div>
-          )}
         </div>
-
-        <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-6">
-          <h3 className="font-semibold text-yellow-900 mb-2">⚠️ Note importante</h3>
-          <p className="text-sm text-yellow-800">
-            Ce minifieur est basique et convient pour des tests rapides. Pour la production, utilisez des outils professionnels comme UglifyJS, Terser (JS) ou cssnano (CSS).
-          </p>
+        {output && (
+          <div className='bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6'>
+            <h3 className='text-xl font-semibold text-gray-900 mb-4'>{t('toolPages.minifier.minifiedCode')}</h3>
+            <div className='bg-gray-50 p-6 rounded-lg mb-4 border border-gray-200 break-all font-mono text-sm max-h-64 overflow-y-auto'>
+              {output}
+            </div>
+            <button
+              onClick={copyToClipboard}
+              className='bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors'
+            >
+              {t('common.copy')}
+            </button>
+          </div>
+        )}
+        <div className='bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6'>
+          <h4 className='font-semibold text-blue-900 mb-2'>{t('toolPages.minifier.noteTitle')}</h4>
+          <p className='text-sm text-blue-800'>{t('toolPages.minifier.noteText')}</p>
         </div>
       </div>
     </div>
@@ -174,4 +143,3 @@ const Minifier = () => {
 };
 
 export default Minifier;
-

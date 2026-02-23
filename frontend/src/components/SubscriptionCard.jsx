@@ -1,16 +1,19 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 const SubscriptionCard = ({ subscription }) => {
+  const { t, i18n } = useTranslation();
+
   if (!subscription) {
     return (
       <div className="bg-white rounded-lg shadow p-6">
-        <h2 className="text-xl font-semibold mb-4">Abonnement</h2>
-        <p className="text-gray-600 mb-4">Aucun abonnement actif</p>
+        <h2 className="text-xl font-semibold mb-4">{t('subscription.title')}</h2>
+        <p className="text-gray-600 mb-4">{t('subscription.noSub')}</p>
         <a
           href="/pricing"
           className="block w-full text-center bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors"
         >
-          Choisir un plan
+          {t('subscription.choosePlan')}
         </a>
       </div>
     );
@@ -31,10 +34,10 @@ const SubscriptionCard = ({ subscription }) => {
 
   const getStatusBadge = (status) => {
     const badges = {
-      active: { color: 'bg-green-100 text-green-800', text: 'Actif' },
-      canceled: { color: 'bg-red-100 text-red-800', text: 'Annulé' },
-      past_due: { color: 'bg-yellow-100 text-yellow-800', text: 'Paiement en retard' },
-      trialing: { color: 'bg-blue-100 text-blue-800', text: 'Essai gratuit' }
+      active: { color: 'bg-green-100 text-green-800', text: t('subscription.status.active') },
+      canceled: { color: 'bg-red-100 text-red-800', text: t('subscription.status.canceled') },
+      past_due: { color: 'bg-yellow-100 text-yellow-800', text: t('subscription.status.past_due') },
+      trialing: { color: 'bg-blue-100 text-blue-800', text: t('subscription.status.trialing') }
     };
     return badges[status] || badges.active;
   };
@@ -44,7 +47,7 @@ const SubscriptionCard = ({ subscription }) => {
 
   return (
     <div className="bg-white rounded-lg shadow p-6">
-      <h2 className="text-xl font-semibold mb-4">Mon abonnement</h2>
+      <h2 className="text-xl font-semibold mb-4">{t('subscription.title')}</h2>
 
       {/* Plan name */}
       <div className="mb-4">
@@ -59,9 +62,9 @@ const SubscriptionCard = ({ subscription }) => {
       {/* Billing info */}
       {subscription.billing_cycle && (
         <div className="mb-4">
-          <div className="text-sm text-gray-600">Facturation</div>
+          <div className="text-sm text-gray-600">{t('subscription.billing')}</div>
           <div className="text-lg font-semibold">
-            {subscription.billing_cycle === 'monthly' ? 'Mensuelle' : 'Annuelle'}
+            {subscription.billing_cycle === 'monthly' ? t('subscription.monthly') : t('subscription.yearly')}
           </div>
         </div>
       )}
@@ -70,10 +73,10 @@ const SubscriptionCard = ({ subscription }) => {
       {subscription.current_period_end && (
         <div className="mb-4">
           <div className="text-sm text-gray-600">
-            {subscription.cancel_at_period_end ? 'Se termine le' : 'Renouvellement le'}
+            {subscription.cancel_at_period_end ? t('subscription.endsOn') : t('subscription.renewsOn')}
           </div>
           <div className="text-sm font-medium">
-            {new Date(subscription.current_period_end).toLocaleDateString('fr-FR', {
+            {new Date(subscription.current_period_end).toLocaleDateString(i18n.language === 'fr' ? 'fr-FR' : 'en-US', {
               day: 'numeric',
               month: 'long',
               year: 'numeric'
@@ -85,7 +88,7 @@ const SubscriptionCard = ({ subscription }) => {
       {/* Features */}
       {subscription.features && subscription.features.length > 0 && (
         <div className="mb-4">
-          <div className="text-sm text-gray-600 mb-2">Fonctionnalités incluses</div>
+          <div className="text-sm text-gray-600 mb-2">{t('subscription.features')}</div>
           <ul className="space-y-1">
             {subscription.features.slice(0, 3).map((feature, index) => (
               <li key={index} className="text-sm text-gray-700 flex items-start">
@@ -95,7 +98,7 @@ const SubscriptionCard = ({ subscription }) => {
             ))}
             {subscription.features.length > 3 && (
               <li className="text-sm text-gray-500">
-                +{subscription.features.length - 3} autres fonctionnalités
+                {t('subscription.moreFeatures', { count: subscription.features.length - 3 })}
               </li>
             )}
           </ul>
@@ -109,14 +112,14 @@ const SubscriptionCard = ({ subscription }) => {
             href="/pricing"
             className="block w-full text-center bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors"
           >
-            Améliorer mon plan
+            {t('subscription.upgradePlan')}
           </a>
         )}
         
         {subscription.stripe_subscription_id && !subscription.cancel_at_period_end && (
           <button
             onClick={() => {
-              if (window.confirm('Êtes-vous sûr de vouloir annuler votre abonnement ?')) {
+              if (window.confirm(t('subscription.cancelConfirm'))) {
                 // Call cancel API
                 fetch(`${process.env.REACT_APP_API_URL}/api/subscription/cancel`, {
                   method: 'POST',
@@ -126,12 +129,12 @@ const SubscriptionCard = ({ subscription }) => {
                 })
                   .then(res => res.json())
                   .then(() => window.location.reload())
-                  .catch(err => alert('Erreur lors de l\'annulation'));
+                  .catch(err => alert(t('subscription.cancelError')));
               }
             }}
             className="block w-full text-center border border-red-300 text-red-600 py-2 px-4 rounded-lg hover:bg-red-50 transition-colors"
           >
-            Annuler l'abonnement
+            {t('subscription.cancelSub')}
           </button>
         )}
       </div>
@@ -139,7 +142,7 @@ const SubscriptionCard = ({ subscription }) => {
       {subscription.cancel_at_period_end && (
         <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
           <p className="text-sm text-yellow-800">
-            ⚠️ Votre abonnement sera annulé à la fin de la période en cours.
+            {t('subscription.cancelWarning')}
           </p>
         </div>
       )}

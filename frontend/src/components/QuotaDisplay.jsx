@@ -1,8 +1,10 @@
-import React, { useState, useEffect, useCallback } from 'react';
+﻿import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../contexts/AuthContext';
+import { useTranslation } from 'react-i18next';
 
 const QuotaDisplay = () => {
   const { token } = useAuth();
+  const { t } = useTranslation();
   const [quota, setQuota] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -52,16 +54,16 @@ const QuotaDisplay = () => {
 
   return (
     <div className="bg-white rounded-lg shadow p-6">
-      <h2 className="text-xl font-semibold mb-4">Utilisation</h2>
+      <h2 className="text-xl font-semibold mb-4">{t('quota.title')}</h2>
       
       <div className="space-y-6">
         {/* Quota quotidien */}
         <div>
           <div className="flex justify-between items-center mb-2">
-            <span className="text-sm font-medium text-gray-700">Aujourd'hui</span>
+            <span className="text-sm font-medium text-gray-700">{t('quota.today')}</span>
             <span className="text-sm text-gray-600">
               {quota.daily.unlimited ? (
-                <span className="text-green-600 font-semibold">Illimité ∞</span>
+                <span className="text-green-600 font-semibold">{t('quota.unlimited')}</span>
               ) : (
                 `${quota.daily.used} / ${quota.daily.limit}`
               )}
@@ -75,12 +77,12 @@ const QuotaDisplay = () => {
           </div>
           {!quota.daily.unlimited && quota.daily.remaining <= 5 && quota.daily.remaining > 0 && (
             <p className="text-xs text-yellow-600 mt-1">
-              ⚠️ Plus que {quota.daily.remaining} utilisations aujourd'hui
+              {t('quota.warningRemaining', { count: quota.daily.remaining })}
             </p>
           )}
           {!quota.daily.unlimited && quota.daily.remaining === 0 && (
             <p className="text-xs text-red-600 mt-1">
-              ❌ Limite quotidienne atteinte
+              {t('quota.dailyLimitReached')}
             </p>
           )}
         </div>
@@ -88,10 +90,10 @@ const QuotaDisplay = () => {
         {/* Quota mensuel */}
         <div>
           <div className="flex justify-between items-center mb-2">
-            <span className="text-sm font-medium text-gray-700">Ce mois</span>
+            <span className="text-sm font-medium text-gray-700">{t('quota.thisMonth')}</span>
             <span className="text-sm text-gray-600">
               {quota.monthly.unlimited ? (
-                <span className="text-green-600 font-semibold">Illimité ∞</span>
+                <span className="text-green-600 font-semibold">{t('quota.unlimited')}</span>
               ) : (
                 `${quota.monthly.used} / ${quota.monthly.limit}`
               )}
@@ -110,9 +112,9 @@ const QuotaDisplay = () => {
       {!quota.daily.unlimited && (dailyPercentage >= 70 || monthlyPercentage >= 70) && (
         <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
           <p className="text-sm text-blue-800">
-            💡 Besoin de plus d'utilisations ?{' '}
+            {t('quota.needMore')}{' '}
             <a href="/pricing" className="font-semibold underline hover:text-blue-600">
-              Passez au plan Pro
+              {t('quota.upgradePro')}
             </a>
           </p>
         </div>
@@ -122,4 +124,3 @@ const QuotaDisplay = () => {
 };
 
 export default QuotaDisplay;
-

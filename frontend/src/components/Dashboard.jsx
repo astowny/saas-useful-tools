@@ -1,11 +1,13 @@
-import React, { useState, useEffect, useCallback } from 'react';
+﻿import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../contexts/AuthContext';
+import { useTranslation } from 'react-i18next';
 import UsageStats from './UsageStats';
 import SubscriptionCard from './SubscriptionCard';
 import QuotaDisplay from './QuotaDisplay';
 
 const Dashboard = () => {
   const { token } = useAuth();
+  const { t } = useTranslation();
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -19,7 +21,7 @@ const Dashboard = () => {
       });
 
       if (!response.ok) {
-        throw new Error('Erreur lors de la récupération du profil');
+        throw new Error(t('dashboard.errorProfile'));
       }
 
       const data = await response.json();
@@ -29,7 +31,7 @@ const Dashboard = () => {
     } finally {
       setLoading(false);
     }
-  }, [token]);
+  }, [token, t]);
 
   useEffect(() => {
     fetchProfile();
@@ -58,10 +60,10 @@ const Dashboard = () => {
       {/* Header */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900">
-          Bonjour, {profile?.user?.full_name || profile?.user?.email} 👋
+          {t('dashboard.greeting', { name: profile?.user?.full_name || profile?.user?.email })}
         </h1>
         <p className="text-gray-600 mt-2">
-          Bienvenue sur votre tableau de bord
+          {t('dashboard.subtitle')}
         </p>
       </div>
 
@@ -85,7 +87,7 @@ const Dashboard = () => {
 
       {/* Quick Actions */}
       <div className="bg-white rounded-lg shadow p-6">
-        <h2 className="text-xl font-semibold mb-4">Actions rapides</h2>
+        <h2 className="text-xl font-semibold mb-4">{t('dashboard.quickActions')}</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <a
             href="/tools"
@@ -93,8 +95,8 @@ const Dashboard = () => {
           >
             <span className="text-2xl mr-3">🧰</span>
             <div>
-              <div className="font-medium">Accéder aux outils</div>
-              <div className="text-sm text-gray-500">Utiliser les outils</div>
+              <div className="font-medium">{t('dashboard.goToTools')}</div>
+              <div className="text-sm text-gray-500">{t('dashboard.useTools')}</div>
             </div>
           </a>
 
@@ -104,8 +106,8 @@ const Dashboard = () => {
           >
             <span className="text-2xl mr-3">⬆️</span>
             <div>
-              <div className="font-medium">Améliorer mon plan</div>
-              <div className="text-sm text-gray-500">Voir les options</div>
+              <div className="font-medium">{t('dashboard.upgradePlan')}</div>
+              <div className="text-sm text-gray-500">{t('dashboard.viewOptions')}</div>
             </div>
           </a>
 
@@ -115,8 +117,8 @@ const Dashboard = () => {
           >
             <span className="text-2xl mr-3">⚙️</span>
             <div>
-              <div className="font-medium">Paramètres</div>
-              <div className="text-sm text-gray-500">Gérer mon compte</div>
+              <div className="font-medium">{t('dashboard.settingsLabel')}</div>
+              <div className="text-sm text-gray-500">{t('dashboard.manageAccount')}</div>
             </div>
           </a>
         </div>
@@ -126,4 +128,3 @@ const Dashboard = () => {
 };
 
 export default Dashboard;
-
