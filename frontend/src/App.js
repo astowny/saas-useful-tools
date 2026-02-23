@@ -9,6 +9,8 @@ import Settings from './components/Settings';
 import ToolsPage from './components/ToolsPage';
 import SupportPage from './components/enterprise/SupportPage';
 import SLADashboard from './components/enterprise/SLADashboard';
+import ApiKeysPage from './components/enterprise/ApiKeysPage';
+import WhiteLabelPage from './components/enterprise/WhiteLabelPage';
 import {
   QRGenerator,
   JsonCsvConverter,
@@ -140,6 +142,8 @@ function Navigation() {
           <Link to="/dashboard">{t('nav.dashboard')}</Link>
           <Link to="/tools">{t('nav.tools')}</Link>
           <Link to="/pricing">{t('nav.pricing')}</Link>
+          {isEnterprise && <Link to="/enterprise/api-keys">{t('enterprise.apiKeys.title')}</Link>}
+          {isEnterprise && <Link to="/enterprise/white-label">{t('enterprise.whiteLabel.title')}</Link>}
           {isEnterprise && <Link to="/enterprise/support">{t('enterprise.support.title')}</Link>}
           {isEnterprise && <Link to="/enterprise/sla">{t('enterprise.sla.title')}</Link>}
           <LanguageSwitcher />
@@ -219,6 +223,8 @@ function AppContent() {
         <Route path="/tools/video-generator" element={<ProtectedRoute><VideoGenerator /></ProtectedRoute>} />
 
         {/* Enterprise Tools */}
+        <Route path="/enterprise/api-keys" element={<ProtectedRoute><ApiKeysPage /></ProtectedRoute>} />
+        <Route path="/enterprise/white-label" element={<ProtectedRoute><WhiteLabelPage /></ProtectedRoute>} />
         <Route path="/enterprise/support" element={<ProtectedRoute><SupportPage /></ProtectedRoute>} />
         <Route path="/enterprise/sla" element={<ProtectedRoute><SLADashboard /></ProtectedRoute>} />
 
