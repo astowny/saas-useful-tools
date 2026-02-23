@@ -17,7 +17,8 @@ const requiredEnvVars = [
 const optionalEnvVars = [
   'DATABASE_URL',
   'DB_HOST',
-  'STRIPE_WEBHOOK_SECRET'
+  'STRIPE_WEBHOOK_SECRET',
+  'FAL_API_KEY'
 ];
 
 console.log('\n🔍 Vérification des variables d\'environnement...\n');
@@ -72,6 +73,7 @@ const subscriptionRoutes = require('./routes/subscription');
 const usageRoutes = require('./routes/usage');
 const stripeWebhookRoutes = require('./routes/stripe-webhook');
 const toolsRoutes = require('./routes/tools');
+const videoRoutes = require('./routes/video');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -148,6 +150,7 @@ app.use('/api/user', userRoutes);
 app.use('/api/subscription', subscriptionRoutes);
 app.use('/api/usage', usageRoutes);
 app.use('/api/tools', toolsRoutes);
+app.use('/api/video', videoRoutes);
 
 // Health check
 app.get('/health', (req, res) => {

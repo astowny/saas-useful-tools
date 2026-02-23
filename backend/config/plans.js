@@ -11,14 +11,16 @@ const PLANS = {
     priceYearly: 0,
     limits: {
       daily_usage: 10,
-      monthly_usage: 100
+      monthly_usage: 100,
+      video_monthly: 0
     },
     features: [
       'Accès à tous les outils',
       '10 utilisations par jour',
       '100 utilisations par mois',
       'Support communautaire',
-      'Publicités affichées'
+      'Publicités affichées',
+      'Génération vidéo IA non disponible'
     ],
     description: 'Parfait pour découvrir nos outils'
   },
@@ -30,7 +32,8 @@ const PLANS = {
     priceYearly: 99.99, // ~17% de réduction
     limits: {
       daily_usage: 1000,
-      monthly_usage: 30000
+      monthly_usage: 30000,
+      video_monthly: 5
     },
     features: [
       'Tout du plan Free',
@@ -40,7 +43,8 @@ const PLANS = {
       'Export avancé (PDF, formats multiples)',
       'Pas de publicité',
       'Historique d\'utilisation 1 an',
-      'Accès anticipé aux nouvelles fonctionnalités'
+      'Accès anticipé aux nouvelles fonctionnalités',
+      '5 vidéos IA / mois (768p, 6s)'
     ],
     description: 'Pour les professionnels et utilisateurs réguliers',
     popular: true
@@ -53,7 +57,8 @@ const PLANS = {
     priceYearly: 499.99, // ~17% de réduction
     limits: {
       daily_usage: -1, // -1 = illimité
-      monthly_usage: -1
+      monthly_usage: -1,
+      video_monthly: 30
     },
     features: [
       'Tout du plan Pro',
@@ -65,7 +70,8 @@ const PLANS = {
       'Historique illimité',
       'Intégrations personnalisées',
       'Formation et onboarding',
-      'Facturation sur mesure'
+      'Facturation sur mesure',
+      '30 vidéos IA / mois (1080p, 6s)'
     ],
     description: 'Pour les équipes et entreprises',
     contactSales: true

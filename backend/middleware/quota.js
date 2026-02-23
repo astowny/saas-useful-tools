@@ -161,8 +161,92 @@ async function getUserUsageStats(userId, period = 'month') {
   return result.rows;
 }
 
+/**
+ * Middleware pour vérifier le quota vidéo mensuel d'un utilisateur.
+ * Les utilisateurs Free (video_monthly=0) sont bloqués IMMÉDIATEMENT
+ * sans jamais appeler l'API fal.ai → zéro coût pour le plan gratuit.
+ */
+const checkVideoQuota = async (req, res, next) => {
+  try {
+    if (!req.user) {
+      return res.status(401).json({
+        error: { message: 'Authentification requise', code: 'AUTH_REQUIRED' }
+      });
+    }
+
+    const userId = req.user.id;
+
+    // Récupérer le plan actif de l'utilisateur
+    const subResult = await db.query(`
+      SELECT sp.name AS plan_name, sp.limits
+      FROM user_subscriptions us
+      JOIN subscription_plans sp ON us.plan_id = sp.id
+      WHERE us.user_id = $1 AND us.status = 'active'
+      ORDER BY us.created_at DESC
+      LIMIT 1
+    `, [userId]);
+
+    if (subResult.rows.length === 0) {
+      return res.status(403).json({
+        error: { message: 'Aucun abonnement actif', code: 'NO_ACTIVE_SUBSCRIPTION' }
+      });
+    }
+
+    const { plan_name, limits } = subResult.rows[0];
+    const videoLimit = limits.video_monthly !== undefined ? limits.video_monthly : 0;
+
+    // Plan Free (ou tout plan avec video_monthly=0) → refus immédiat, 0 appel API externe
+    if (videoLimit === 0) {
+      return res.status(403).json({
+        error: {
+          message: 'La génération de vidéos IA est disponible à partir du plan Pro.',
+          code: 'VIDEO_UPGRADE_REQUIRED',
+          plan: plan_name
+        }
+      });
+    }
+
+    // Compter les vidéos générées ce mois-ci (statuts terminaux uniquement)
+    const firstDayOfMonth = new Date();
+    firstDayOfMonth.setDate(1);
+    firstDayOfMonth.setHours(0, 0, 0, 0);
+
+    const usageResult = await db.query(`
+      SELECT COUNT(*) AS count
+      FROM video_jobs
+      WHERE user_id = $1
+        AND created_at >= $2
+        AND status IN ('completed', 'processing', 'pending')
+    `, [userId, firstDayOfMonth]);
+
+    const videoUsed = parseInt(usageResult.rows[0].count);
+
+    // videoLimit = -1 signifie illimité (Enterprise sans plafond vidéo futur)
+    if (videoLimit !== -1 && videoUsed >= videoLimit) {
+      return res.status(429).json({
+        error: {
+          message: `Limite mensuelle de vidéos atteinte (${videoLimit} vidéos/mois)`,
+          code: 'VIDEO_MONTHLY_LIMIT_EXCEEDED',
+          limit: videoLimit,
+          used: videoUsed
+        }
+      });
+    }
+
+    // Attacher les infos pour la suite du traitement
+    req.videoQuota = { limit: videoLimit, used: videoUsed };
+    req.userPlan = plan_name;
+
+    next();
+  } catch (error) {
+    console.error('checkVideoQuota error:', error);
+    res.status(500).json({ error: { message: 'Erreur lors de la vérification du quota vidéo' } });
+  }
+};
+
 module.exports = {
   checkQuota,
+  checkVideoQuota,
   logUsage,
   getUserUsageStats
 };

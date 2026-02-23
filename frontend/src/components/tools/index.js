@@ -28,6 +28,9 @@ export { default as JwtDecoder } from './JwtDecoder';
 export { default as DcaCalculator } from './DcaCalculator';
 export { default as ImpermanentLoss } from './ImpermanentLoss';
 
+// AI
+export { default as VideoGenerator } from './VideoGenerator';
+
 // Generic
 export { default as ToolComingSoon } from './ToolComingSoon';
 

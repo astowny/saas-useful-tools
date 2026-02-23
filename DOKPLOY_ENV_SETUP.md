@@ -123,6 +123,23 @@ Valeur : whsec_VOTRE_WEBHOOK_SECRET
    - `invoice.payment_succeeded`
 5. Copiez le "Signing secret" (commence par `whsec_`)
 
+### Variable 7 : FAL_API_KEY (Générateur vidéo IA)
+```
+Nom  : FAL_API_KEY
+Valeur : your_fal_api_key_here
+```
+
+**Comment obtenir :**
+1. Créez un compte sur https://fal.ai
+2. Allez dans Dashboard → API Keys
+3. Créez une clé et copiez-la
+
+**Notes importantes :**
+- Nécessaire **uniquement** pour le Générateur de vidéos IA
+- Les utilisateurs **Free ne déclenchent JAMAIS d'appel fal.ai** (quota = 0, bloqués en amont)
+- Sans cette clé, les plans Pro/Enterprise reçoivent une erreur 503 au moment de générer
+- Coûts : ~$0.19/vidéo (Pro, 768p) · ~$0.32/vidéo (Enterprise, 1080p)
+
 ---
 
 ## 🧪 Vérifier que les variables sont bien prises en compte
@@ -249,6 +266,7 @@ Avant de démarrer votre application, vérifiez :
 - [ ] `FRONTEND_URL` configuré avec votre domaine
 - [ ] `DATABASE_URL` existe (automatique si PostgreSQL Dokploy)
 - [ ] `STRIPE_WEBHOOK_SECRET` configuré (optionnel au début)
+- [ ] `FAL_API_KEY` configuré si vous activez la génération vidéo (Pro/Enterprise)
 - [ ] Script `npm run check-env` exécuté avec succès
 - [ ] Logs de démarrage montrent toutes les variables ✅
 

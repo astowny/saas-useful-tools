@@ -91,6 +91,23 @@ CREATE TABLE IF NOT EXISTS usage_logs (
   metadata JSONB
 );
 
+-- Table des jobs de génération vidéo IA
+CREATE TABLE IF NOT EXISTS video_jobs (
+  id SERIAL PRIMARY KEY,
+  user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+  fal_request_id VARCHAR(255),
+  model VARCHAR(255),
+  status VARCHAR(50) DEFAULT 'pending',
+  prompt TEXT,
+  video_url TEXT,
+  error_message TEXT,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_video_jobs_user_id ON video_jobs(user_id);
+CREATE INDEX IF NOT EXISTS idx_video_jobs_status ON video_jobs(status);
+
 -- Table de l'historique des paiements
 CREATE TABLE IF NOT EXISTS payment_history (
   id SERIAL PRIMARY KEY,
@@ -151,15 +168,17 @@ async function initDatabase() {
       INSERT INTO subscription_plans (name, display_name, price_monthly, price_yearly, limits, features)
       VALUES
         ('free', 'Free', 0, 0,
-         '{"daily_usage": 10, "monthly_usage": 100}',
-         '["Accès à tous les outils", "10 utilisations par jour", "Support communautaire"]'),
+         '{"daily_usage": 10, "monthly_usage": 100, "video_monthly": 0}',
+         '["Accès à tous les outils", "10 utilisations par jour", "Support communautaire", "Génération vidéo IA non disponible"]'),
         ('pro', 'Pro', 9.99, 99.99,
-         '{"daily_usage": 1000, "monthly_usage": 30000}',
-         '["Accès illimité aux outils", "1000 utilisations par jour", "Support prioritaire", "Export avancé", "Pas de publicité"]'),
+         '{"daily_usage": 1000, "monthly_usage": 30000, "video_monthly": 5}',
+         '["Accès illimité aux outils", "1000 utilisations par jour", "Support prioritaire", "Export avancé", "Pas de publicité", "5 vidéos IA / mois (768p, 6s)"]'),
         ('enterprise', 'Enterprise', 49.99, 499.99,
-         '{"daily_usage": -1, "monthly_usage": -1}',
-         '["Tout du plan Pro", "Utilisations illimitées", "Support dédié 24/7", "API access", "White-label", "SLA garanti"]')
-      ON CONFLICT (name) DO NOTHING
+         '{"daily_usage": -1, "monthly_usage": -1, "video_monthly": 30}',
+         '["Tout du plan Pro", "Utilisations illimitées", "Support dédié 24/7", "API access", "White-label", "SLA garanti", "30 vidéos IA / mois (1080p, 6s)"]')
+      ON CONFLICT (name) DO UPDATE SET
+        limits = EXCLUDED.limits,
+        features = EXCLUDED.features
       RETURNING name;
     `);
 

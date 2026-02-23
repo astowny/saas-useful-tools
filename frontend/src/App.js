@@ -26,6 +26,7 @@ import {
   JwtDecoder,
   DcaCalculator,
   ImpermanentLoss,
+  VideoGenerator,
   ToolComingSoon
 } from './components/tools';
 import './App.css';
@@ -201,6 +202,9 @@ function AppContent() {
         {/* Finance Tools */}
         <Route path="/tools/dca-calculator" element={<ProtectedRoute><DcaCalculator /></ProtectedRoute>} />
         <Route path="/tools/impermanent-loss" element={<ProtectedRoute><ImpermanentLoss /></ProtectedRoute>} />
+
+        {/* AI Tools */}
+        <Route path="/tools/video-generator" element={<ProtectedRoute><VideoGenerator /></ProtectedRoute>} />
 
         <Route path="/pricing" element={
           <ProtectedRoute>

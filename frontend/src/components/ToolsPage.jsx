@@ -33,6 +33,9 @@ const ToolsPage = () => {
     finance: [
       { name: "Calculateur DCA", icon: "📈", desc: "Dollar Cost Averaging", route: "/tools/dca-calculator" },
       { name: "Impermanent Loss", icon: "💸", desc: "Calcul de perte", route: "/tools/impermanent-loss" }
+    ],
+    ai: [
+      { name: "Générateur de vidéos IA", icon: "🎬", desc: "Texte → vidéo (Pro/Enterprise)", route: "/tools/video-generator" }
     ]
   };
 
@@ -41,7 +44,8 @@ const ToolsPage = () => {
     { id: 'design', name: '🎨 Design', color: 'purple' },
     { id: 'productivity', name: '⚡ Productivité', color: 'green' },
     { id: 'security', name: '🔒 Sécurité', color: 'red' },
-    { id: 'finance', name: '💰 Finance', color: 'yellow' }
+    { id: 'finance', name: '💰 Finance', color: 'yellow' },
+    { id: 'ai', name: '🤖 IA Générative', color: 'indigo' }
   ];
 
   return (
@@ -87,8 +91,8 @@ const ToolsPage = () => {
             💡 Astuce
           </h3>
           <p className="text-blue-800">
-            Tous les outils sont gratuits et fonctionnent directement dans votre navigateur. 
-            Vos données restent privées et ne sont jamais envoyées à nos serveurs.
+            Les outils s'exécutent directement dans votre navigateur — vos contenus (textes, images, fichiers) ne quittent jamais votre appareil.
+            Seule l'utilisation de l'outil est enregistrée pour la gestion des quotas.
           </p>
         </div>
       </div>
