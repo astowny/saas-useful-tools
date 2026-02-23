@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate, Link } from 'react-ro
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import Dashboard from './components/Dashboard';
 import PricingPage from './components/PricingPage';
+import Settings from './components/Settings';
 import ToolsPage from './components/ToolsPage';
 import {
   QRGenerator,
@@ -204,6 +205,11 @@ function AppContent() {
         <Route path="/pricing" element={
           <ProtectedRoute>
             <PricingPage />
+          </ProtectedRoute>
+        } />
+        <Route path="/settings" element={
+          <ProtectedRoute>
+            <Settings />
           </ProtectedRoute>
         } />
         <Route path="/" element={<Navigate to={isAuthenticated ? "/dashboard" : "/login"} />} />
