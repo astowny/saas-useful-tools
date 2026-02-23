@@ -13,35 +13,37 @@ const authenticateToken = async (req, res, next) => {
       return res.status(401).json({ error: { message: 'Token manquant' } });
     }
 
-    jwt.verify(token, process.env.JWT_SECRET, async (err, decoded) => {
-      if (err) {
-        return res.status(403).json({ error: { message: 'Token invalide ou expiré' } });
-      }
+    // Synchronous verify so errors are caught by the outer try/catch
+    let decoded;
+    try {
+      decoded = jwt.verify(token, process.env.JWT_SECRET);
+    } catch (jwtErr) {
+      return res.status(403).json({ error: { message: 'Token invalide ou expiré' } });
+    }
 
-      // Vérifier que l'utilisateur existe toujours
-      const result = await db.query(
-        'SELECT id, email, full_name, is_active FROM users WHERE id = $1',
-        [decoded.userId]
-      );
+    // Vérifier que l'utilisateur existe toujours
+    const result = await db.query(
+      'SELECT id, email, full_name, is_active FROM users WHERE id = $1',
+      [decoded.userId]
+    );
 
-      if (result.rows.length === 0) {
-        return res.status(404).json({ error: { message: 'Utilisateur non trouvé' } });
-      }
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: { message: 'Utilisateur non trouvé' } });
+    }
 
-      const user = result.rows[0];
+    const user = result.rows[0];
 
-      if (!user.is_active) {
-        return res.status(403).json({ error: { message: 'Compte désactivé' } });
-      }
+    if (!user.is_active) {
+      return res.status(403).json({ error: { message: 'Compte désactivé' } });
+    }
 
-      req.user = {
-        id: user.id,
-        email: user.email,
-        fullName: user.full_name
-      };
+    req.user = {
+      id: user.id,
+      email: user.email,
+      fullName: user.full_name
+    };
 
-      next();
-    });
+    next();
   } catch (error) {
     console.error('Auth middleware error:', error);
     res.status(500).json({ error: { message: 'Erreur serveur' } });
@@ -60,27 +62,28 @@ const optionalAuth = async (req, res, next) => {
       return next();
     }
 
-    jwt.verify(token, process.env.JWT_SECRET, async (err, decoded) => {
-      if (err) {
-        return next();
-      }
+    let decoded;
+    try {
+      decoded = jwt.verify(token, process.env.JWT_SECRET);
+    } catch (jwtErr) {
+      return next();
+    }
 
-      const result = await db.query(
-        'SELECT id, email, full_name FROM users WHERE id = $1 AND is_active = true',
-        [decoded.userId]
-      );
+    const result = await db.query(
+      'SELECT id, email, full_name FROM users WHERE id = $1 AND is_active = true',
+      [decoded.userId]
+    );
 
-      if (result.rows.length > 0) {
-        const user = result.rows[0];
-        req.user = {
-          id: user.id,
-          email: user.email,
-          fullName: user.full_name
-        };
-      }
+    if (result.rows.length > 0) {
+      const user = result.rows[0];
+      req.user = {
+        id: user.id,
+        email: user.email,
+        fullName: user.full_name
+      };
+    }
 
-      next();
-    });
+    next();
   } catch (error) {
     next();
   }

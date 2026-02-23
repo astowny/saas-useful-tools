@@ -1,7 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
+import { useQuota } from '../../hooks/useQuota';
 
 const ColorConverter = () => {
+  const { checkAndUseQuota, quotaError } = useQuota();
+  const quotaChecked = useRef(false);
   const [hex, setHex] = useState('#3B82F6');
   const [rgb, setRgb] = useState({ r: 59, g: 130, b: 246 });
   const [hsl, setHsl] = useState({ h: 217, s: 91, l: 60 });
@@ -62,6 +65,13 @@ const ColorConverter = () => {
     setHsl(rgbToHsl(r, g, b));
   };
 
+  useEffect(() => {
+    if (!quotaChecked.current) {
+      quotaChecked.current = true;
+      checkAndUseQuota('color-converter', 'design');
+    }
+  }, [checkAndUseQuota]);
+
   const copyToClipboard = (text) => {
     navigator.clipboard.writeText(text);
   };
@@ -72,11 +82,26 @@ const ColorConverter = () => {
         <Link to="/tools" className="text-blue-600 hover:text-blue-700 mb-6 inline-flex items-center gap-2">
           ← Retour aux outils
         </Link>
-        
+
         <div className="mb-8">
           <h1 className="text-4xl font-bold text-gray-900 mb-2">🌈 Convertisseur de couleurs</h1>
           <p className="text-gray-600">Convertissez entre HEX, RGB et HSL</p>
         </div>
+
+        {quotaError && (
+          <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+            <div className="flex items-start gap-3">
+              <span className="text-2xl">⛔</span>
+              <div className="flex-1">
+                <h3 className="font-semibold text-red-900 mb-1">Limite atteinte</h3>
+                <p className="text-sm text-red-800">{quotaError.message}</p>
+                <Link to="/pricing" className="inline-block mt-2 text-sm font-semibold text-red-700 underline hover:text-red-600">
+                  Voir les plans →
+                </Link>
+              </div>
+            </div>
+          </div>
+        )}
 
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
           <div className="mb-6">

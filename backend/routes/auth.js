@@ -118,12 +118,22 @@ router.post('/login', async (req, res) => {
       { expiresIn: process.env.JWT_EXPIRES_IN || '7d' }
     );
 
+    // Récupérer le plan actif pour que le frontend affiche les liens Enterprise immédiatement
+    const planResult = await db.query(
+      `SELECT sp.name AS plan_name FROM user_subscriptions us
+       JOIN subscription_plans sp ON us.plan_id = sp.id
+       WHERE us.user_id = $1 AND us.status = 'active'
+       ORDER BY us.created_at DESC LIMIT 1`,
+      [user.id]
+    );
+
     res.json({
       message: 'Connexion réussie',
       user: {
         id: user.id,
         email: user.email,
-        fullName: user.full_name
+        fullName: user.full_name,
+        plan_name: planResult.rows[0]?.plan_name || 'free'
       },
       token
     });

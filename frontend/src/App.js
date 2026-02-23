@@ -130,14 +130,27 @@ function LoginPage() {
 
 // Composant de navigation
 function Navigation() {
-  const { user, logout } = useAuth();
+  const { user, logout, whiteLabelConfig } = useAuth();
   const { t } = useTranslation();
   const isEnterprise = user?.plan_name === 'enterprise';
+  const brandName = whiteLabelConfig ? whiteLabelConfig.app_name : t('nav.brand');
+  const isBranded = !!whiteLabelConfig;
+  const navStyle = isBranded ? { background: whiteLabelConfig.primary_color } : {};
 
   return (
-    <nav className="navbar">
+    <nav className="navbar" style={navStyle} data-branded={isBranded ? 'true' : 'false'}>
       <div className="nav-container">
-        <Link to="/dashboard" className="nav-brand">{t('nav.brand')}</Link>
+        <Link to="/dashboard" className="nav-brand">
+          {whiteLabelConfig && whiteLabelConfig.logo_url && (
+            <img
+              src={whiteLabelConfig.logo_url}
+              alt={brandName}
+              className="inline-block h-5 w-auto mr-2 align-middle"
+              onError={e => { e.target.style.display = 'none'; }}
+            />
+          )}
+          {brandName}
+        </Link>
         <div className="nav-links">
           <Link to="/dashboard">{t('nav.dashboard')}</Link>
           <Link to="/tools">{t('nav.tools')}</Link>

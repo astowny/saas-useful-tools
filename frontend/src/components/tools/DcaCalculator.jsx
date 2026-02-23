@@ -1,7 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
+import { useQuota } from '../../hooks/useQuota';
 
 const DcaCalculator = () => {
+  const { checkAndUseQuota, quotaError } = useQuota();
+  const quotaChecked = useRef(false);
   const [investmentAmount, setInvestmentAmount] = useState(100);
   const [frequency, setFrequency] = useState('monthly');
   const [duration, setDuration] = useState(12);
@@ -32,6 +35,13 @@ const DcaCalculator = () => {
     };
   };
 
+  useEffect(() => {
+    if (!quotaChecked.current) {
+      quotaChecked.current = true;
+      checkAndUseQuota('dca-calculator', 'finance');
+    }
+  }, [checkAndUseQuota]);
+
   const results = calculateDCA();
 
   return (
@@ -40,11 +50,26 @@ const DcaCalculator = () => {
         <Link to="/tools" className="text-blue-600 hover:text-blue-700 mb-6 inline-flex items-center gap-2">
           ← Retour aux outils
         </Link>
-        
+
         <div className="mb-8">
           <h1 className="text-4xl font-bold text-gray-900 mb-2">📈 Calculateur DCA</h1>
           <p className="text-gray-600">Dollar Cost Averaging - Investissement programmé</p>
         </div>
+
+        {quotaError && (
+          <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+            <div className="flex items-start gap-3">
+              <span className="text-2xl">⛔</span>
+              <div className="flex-1">
+                <h3 className="font-semibold text-red-900 mb-1">Limite atteinte</h3>
+                <p className="text-sm text-red-800">{quotaError.message}</p>
+                <Link to="/pricing" className="inline-block mt-2 text-sm font-semibold text-red-700 underline hover:text-red-600">
+                  Voir les plans →
+                </Link>
+              </div>
+            </div>
+          </div>
+        )}
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">

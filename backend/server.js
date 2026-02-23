@@ -275,40 +275,45 @@ const ensureEnterpriseSchema = async () => {
   }
 };
 
-app.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
-  console.log(`📝 Environment: ${process.env.NODE_ENV}`);
-  console.log(`🔗 Frontend URL: ${process.env.FRONTEND_URL}`);
+// Run enterprise schema migration BEFORE listening (avoids race condition on first request)
+ensureEnterpriseSchema()
+  .then(() => {
+    app.listen(PORT, () => {
+      console.log(`🚀 Server running on port ${PORT}`);
+      console.log(`📝 Environment: ${process.env.NODE_ENV}`);
+      console.log(`🔗 Frontend URL: ${process.env.FRONTEND_URL}`);
 
-  // Run enterprise schema migration on every startup (idempotent)
-  ensureEnterpriseSchema();
+      // ── SLA Health check job (every 60 seconds) ──
+      const runHealthCheck = async () => {
+        const start = Date.now();
+        try {
+          const response = await fetch(`http://localhost:${PORT}/health`);
+          const elapsed = Date.now() - start;
+          const status = response.ok ? 'up' : 'degraded';
+          await db.query(
+            `INSERT INTO uptime_checks (status, response_time_ms, endpoint) VALUES ($1, $2, $3)`,
+            [status, elapsed, '/health']
+          );
+        } catch (err) {
+          const elapsed = Date.now() - start;
+          console.error('Health check failed:', err.message);
+          await db.query(
+            `INSERT INTO uptime_checks (status, response_time_ms, endpoint, error_message) VALUES ($1, $2, $3, $4)`,
+            ['down', elapsed, '/health', err.message]
+          ).catch(() => {});
+        }
+      };
 
-  // ── SLA Health check job (every 60 seconds) ──
-  const runHealthCheck = async () => {
-    const start = Date.now();
-    try {
-      const response = await fetch(`http://localhost:${PORT}/health`);
-      const elapsed = Date.now() - start;
-      const status = response.ok ? 'up' : 'degraded';
-      await db.query(
-        `INSERT INTO uptime_checks (status, response_time_ms, endpoint) VALUES ($1, $2, $3)`,
-        [status, elapsed, '/health']
-      );
-    } catch (err) {
-      const elapsed = Date.now() - start;
-      console.error('Health check failed:', err.message);
-      await db.query(
-        `INSERT INTO uptime_checks (status, response_time_ms, endpoint, error_message) VALUES ($1, $2, $3, $4)`,
-        ['down', elapsed, '/health', err.message]
-      ).catch(() => {});
-    }
-  };
-
-  // Run immediately after boot, then every 60s
-  setTimeout(runHealthCheck, 5000);
-  setInterval(runHealthCheck, 60000);
-  console.log('📊 SLA health check job started (every 60s)');
-});
+      // Run immediately after boot, then every 60s
+      setTimeout(runHealthCheck, 5000);
+      setInterval(runHealthCheck, 60000);
+      console.log('📊 SLA health check job started (every 60s)');
+    });
+  })
+  .catch(err => {
+    console.error('❌ Fatal: enterprise schema init failed, aborting startup:', err);
+    process.exit(1);
+  });
 
 module.exports = app;
 

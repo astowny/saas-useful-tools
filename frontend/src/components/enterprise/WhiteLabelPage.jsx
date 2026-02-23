@@ -3,7 +3,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { useTranslation } from 'react-i18next';
 
 const WhiteLabelPage = () => {
-  const { token } = useAuth();
+  const { token, refreshWhiteLabel } = useAuth();
   const { t } = useTranslation();
   const API = process.env.REACT_APP_API_URL;
 
@@ -41,6 +41,7 @@ const WhiteLabelPage = () => {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error?.message);
       setConfig({ ...data.config, logo_url: data.config.logo_url || '' });
+      await refreshWhiteLabel();
       setSaved(true);
       setTimeout(() => setSaved(false), 3000);
     } catch (err) { setError(err.message); }
