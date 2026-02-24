@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useQuota } from '../../hooks/useQuota';
 
 const BoxShadow = () => {
+  const { t } = useTranslation();
   const { checkAndUseQuota, quotaError } = useQuota();
   const quotaChecked = useRef(false);
   const [horizontal, setHorizontal] = useState(0);
@@ -39,12 +41,12 @@ const BoxShadow = () => {
     <div className="min-h-screen bg-gray-50">
       <div className="container mx-auto px-4 py-8 max-w-4xl">
         <Link to="/tools" className="text-blue-600 hover:text-blue-700 mb-6 inline-flex items-center gap-2">
-          ← Retour aux outils
+          {t('common.backToTools')}
         </Link>
 
         <div className="mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">📦 Box Shadow Generator</h1>
-          <p className="text-gray-600">Créez des ombres CSS personnalisées</p>
+          <h1 className="text-4xl font-bold text-gray-900 mb-2">{t('toolPages.boxShadow.title')}</h1>
+          <p className="text-gray-600">{t('toolPages.boxShadow.subtitle')}</p>
         </div>
 
         {quotaError && (
@@ -52,10 +54,10 @@ const BoxShadow = () => {
             <div className="flex items-start gap-3">
               <span className="text-2xl">⛔</span>
               <div className="flex-1">
-                <h3 className="font-semibold text-red-900 mb-1">Limite atteinte</h3>
+                <h3 className="font-semibold text-red-900 mb-1">{t('common.limitReached')}</h3>
                 <p className="text-sm text-red-800">{quotaError.message}</p>
                 <Link to="/pricing" className="inline-block mt-2 text-sm font-semibold text-red-700 underline hover:text-red-600">
-                  Voir les plans →
+                  {t('common.viewPlans')}
                 </Link>
               </div>
             </div>
@@ -74,7 +76,7 @@ const BoxShadow = () => {
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Horizontal: {horizontal}px
+                  {t('toolPages.boxShadow.horizontal', { value: horizontal })}
                 </label>
                 <input
                   type="range"
@@ -88,7 +90,7 @@ const BoxShadow = () => {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Vertical: {vertical}px
+                  {t('toolPages.boxShadow.vertical', { value: vertical })}
                 </label>
                 <input
                   type="range"
@@ -102,7 +104,7 @@ const BoxShadow = () => {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Blur: {blur}px
+                  {t('toolPages.boxShadow.blur', { value: blur })}
                 </label>
                 <input
                   type="range"
@@ -116,7 +118,7 @@ const BoxShadow = () => {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Spread: {spread}px
+                  {t('toolPages.boxShadow.spread', { value: spread })}
                 </label>
                 <input
                   type="range"
@@ -130,7 +132,7 @@ const BoxShadow = () => {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Opacité: {opacity}
+                  {t('toolPages.boxShadow.opacityLabel', { opacity })}
                 </label>
                 <input
                   type="range"
@@ -151,7 +153,7 @@ const BoxShadow = () => {
                     onChange={(e) => setInset(e.target.checked)}
                     className="w-5 h-5 mr-2 text-blue-600"
                   />
-                  <span className="text-gray-700">Inset</span>
+                  <span className="text-gray-700">{t('toolPages.boxShadow.inset')}</span>
                 </label>
               </div>
             </div>
@@ -159,12 +161,12 @@ const BoxShadow = () => {
 
           <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
             <div className="flex items-center justify-between mb-2">
-              <label className="block text-sm font-medium text-gray-700">Code CSS</label>
+              <label className="block text-sm font-medium text-gray-700">{t('toolPages.boxShadow.cssCode')}</label>
               <button
                 onClick={copyToClipboard}
                 className="text-blue-600 hover:text-blue-700 text-sm"
               >
-                📋 Copier
+                {t('common.copy')}
               </button>
             </div>
             <code className="text-sm text-gray-900 font-mono">{getShadowCSS()}</code>

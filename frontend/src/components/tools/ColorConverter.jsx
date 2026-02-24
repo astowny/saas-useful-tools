@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useQuota } from '../../hooks/useQuota';
 
 const ColorConverter = () => {
+  const { t } = useTranslation();
   const { checkAndUseQuota, quotaError } = useQuota();
   const quotaChecked = useRef(false);
   const [hex, setHex] = useState('#3B82F6');
@@ -80,12 +82,12 @@ const ColorConverter = () => {
     <div className="min-h-screen bg-gray-50">
       <div className="container mx-auto px-4 py-8 max-w-4xl">
         <Link to="/tools" className="text-blue-600 hover:text-blue-700 mb-6 inline-flex items-center gap-2">
-          ← Retour aux outils
+          {t('common.backToTools')}
         </Link>
 
         <div className="mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">🌈 Convertisseur de couleurs</h1>
-          <p className="text-gray-600">Convertissez entre HEX, RGB et HSL</p>
+          <h1 className="text-4xl font-bold text-gray-900 mb-2">{t('toolPages.colorConverter.title')}</h1>
+          <p className="text-gray-600">{t('toolPages.colorConverter.subtitle')}</p>
         </div>
 
         {quotaError && (
@@ -93,10 +95,10 @@ const ColorConverter = () => {
             <div className="flex items-start gap-3">
               <span className="text-2xl">⛔</span>
               <div className="flex-1">
-                <h3 className="font-semibold text-red-900 mb-1">Limite atteinte</h3>
+                <h3 className="font-semibold text-red-900 mb-1">{t('common.limitReached')}</h3>
                 <p className="text-sm text-red-800">{quotaError.message}</p>
                 <Link to="/pricing" className="inline-block mt-2 text-sm font-semibold text-red-700 underline hover:text-red-600">
-                  Voir les plans →
+                  {t('common.viewPlans')}
                 </Link>
               </div>
             </div>

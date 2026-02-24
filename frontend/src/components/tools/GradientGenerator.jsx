@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useQuota } from '../../hooks/useQuota';
 
 const GradientGenerator = () => {
+  const { t } = useTranslation();
   const { checkAndUseQuota, quotaError } = useQuota();
   const quotaChecked = useRef(false);
   const [color1, setColor1] = useState('#3B82F6');
@@ -41,12 +43,12 @@ const GradientGenerator = () => {
     <div className="min-h-screen bg-gray-50">
       <div className="container mx-auto px-4 py-8 max-w-4xl">
         <Link to="/tools" className="text-blue-600 hover:text-blue-700 mb-6 inline-flex items-center gap-2">
-          ← Retour aux outils
+          {t('common.backToTools')}
         </Link>
 
         <div className="mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">🌅 Générateur de dégradés</h1>
-          <p className="text-gray-600">Créez des dégradés CSS personnalisés</p>
+          <h1 className="text-4xl font-bold text-gray-900 mb-2">{t('toolPages.gradient.title')}</h1>
+          <p className="text-gray-600">{t('toolPages.gradient.subtitle')}</p>
         </div>
 
         {quotaError && (
@@ -54,10 +56,10 @@ const GradientGenerator = () => {
             <div className="flex items-start gap-3">
               <span className="text-2xl">⛔</span>
               <div className="flex-1">
-                <h3 className="font-semibold text-red-900 mb-1">Limite atteinte</h3>
+                <h3 className="font-semibold text-red-900 mb-1">{t('common.limitReached')}</h3>
                 <p className="text-sm text-red-800">{quotaError.message}</p>
                 <Link to="/pricing" className="inline-block mt-2 text-sm font-semibold text-red-700 underline hover:text-red-600">
-                  Voir les plans →
+                  {t('common.viewPlans')}
                 </Link>
               </div>
             </div>
@@ -77,7 +79,7 @@ const GradientGenerator = () => {
                   type === 'linear' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                 }`}
               >
-                Linéaire
+                {t('toolPages.gradient.linear')}
               </button>
               <button
                 onClick={() => setType('radial')}
@@ -85,13 +87,13 @@ const GradientGenerator = () => {
                   type === 'radial' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                 }`}
               >
-                Radial
+                {t('toolPages.gradient.radial')}
               </button>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Couleur 1</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">{t('toolPages.gradient.color1')}</label>
                 <div className="flex gap-2">
                   <input
                     type="color"
@@ -109,7 +111,7 @@ const GradientGenerator = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Couleur 2</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">{t('toolPages.gradient.color2')}</label>
                 <div className="flex gap-2">
                   <input
                     type="color"
@@ -129,7 +131,7 @@ const GradientGenerator = () => {
 
             {type === 'linear' && (
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Angle: {angle}°</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">{t('toolPages.gradient.angleLabel', { angle })}</label>
                 <input
                   type="range"
                   min="0"
@@ -144,12 +146,12 @@ const GradientGenerator = () => {
 
           <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-4">
             <div className="flex items-center justify-between mb-2">
-              <label className="block text-sm font-medium text-gray-700">Code CSS</label>
+              <label className="block text-sm font-medium text-gray-700">{t('toolPages.gradient.cssCode')}</label>
               <button
                 onClick={copyToClipboard}
                 className="text-blue-600 hover:text-blue-700 text-sm"
               >
-                📋 Copier
+                {t('common.copy')}
               </button>
             </div>
             <code className="text-sm text-gray-900 font-mono">{getGradientCSS()}</code>

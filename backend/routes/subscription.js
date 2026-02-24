@@ -222,5 +222,27 @@ router.post('/admin-set-plan', authenticateToken, async (req, res) => {
   }
 });
 
+/**
+ * GET /api/subscription/invoices
+ * Get billing history for the current user
+ */
+router.get('/invoices', authenticateToken, async (req, res) => {
+  try {
+    const result = await db.query(
+      `SELECT id, amount, currency, status, stripe_invoice_id, description, created_at
+       FROM payment_history
+       WHERE user_id = $1
+       ORDER BY created_at DESC
+       LIMIT 24`,
+      [req.user.id]
+    );
+    res.json({ invoices: result.rows });
+  } catch (error) {
+    // payment_history table might not exist yet
+    console.error('Invoices error:', error.message);
+    res.json({ invoices: [] });
+  }
+});
+
 module.exports = router;
 

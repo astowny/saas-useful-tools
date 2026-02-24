@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useTranslation } from 'react-i18next';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import UsageStats from './UsageStats';
 import SubscriptionCard from './SubscriptionCard';
 import QuotaDisplay from './QuotaDisplay';
@@ -8,9 +9,20 @@ import QuotaDisplay from './QuotaDisplay';
 const Dashboard = () => {
   const { token } = useAuth();
   const { t } = useTranslation();
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [showPaymentSuccess, setShowPaymentSuccess] = useState(false);
+
+  // Detect Stripe redirect after successful payment
+  useEffect(() => {
+    if (searchParams.get('session_id')) {
+      setShowPaymentSuccess(true);
+      navigate('/dashboard', { replace: true });
+    }
+  }, [searchParams, navigate]);
 
   const fetchProfile = useCallback(async () => {
     try {
@@ -57,6 +69,23 @@ const Dashboard = () => {
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
+      {/* Payment Success Modal */}
+      {showPaymentSuccess && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-sm w-full text-center">
+            <div className="text-6xl mb-4">🎉</div>
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">{t('dashboard.paymentSuccess.title')}</h2>
+            <p className="text-gray-500 mb-6">{t('dashboard.paymentSuccess.message')}</p>
+            <button
+              onClick={() => setShowPaymentSuccess(false)}
+              className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 rounded-xl transition-colors"
+            >
+              {t('dashboard.paymentSuccess.cta')}
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Header */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900">

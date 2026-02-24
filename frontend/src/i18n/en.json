@@ -18,7 +18,23 @@
     "loading": "Loading...",
     "noAccount": "No account yet?",
     "alreadyAccount": "Already have an account?",
-    "error": "An error occurred"
+    "error": "An error occurred",
+    "forgotPassword": "Forgot password?",
+    "forgotPasswordDesc": "Enter your email address to receive a password reset link.",
+    "sendResetLink": "Send reset link",
+    "checkYourEmail": "Check your inbox",
+    "resetLinkSent": "We sent a reset link to {{email}}. Check your spam folder if needed.",
+    "backToLogin": "Back to login",
+    "resetPassword": "Reset password",
+    "resetPasswordDesc": "Enter your new password below.",
+    "newPassword": "New password",
+    "confirmPassword": "Confirm password",
+    "passwordMismatch": "Passwords do not match",
+    "passwordTooShort": "Password must be at least 8 characters",
+    "passwordResetSuccess": "Password reset successfully!",
+    "redirectingToLogin": "Redirecting to login in a few seconds...",
+    "invalidToken": "Invalid or expired link",
+    "requestNewLink": "Request a new reset link"
   },
   "common": {
     "loading": "Loading...",
@@ -35,7 +51,8 @@
     "unlimited": "Unlimited ∞",
     "limitReached": "Limit reached",
     "viewPlans": "View available plans →",
-    "error": "An error occurred"
+    "error": "An error occurred",
+    "cancel": "Cancel"
   },
   "quota": {
     "title": "Usage",
@@ -57,7 +74,12 @@
     "viewOptions": "View options",
     "settingsLabel": "Settings",
     "manageAccount": "Manage account",
-    "errorProfile": "Error loading profile"
+    "errorProfile": "Error loading profile",
+    "paymentSuccess": {
+      "title": "Payment successful! 🎉",
+      "message": "Your subscription has been activated. Enjoy your new plan!",
+      "cta": "Start exploring →"
+    }
   },
   "stats": {
     "title": "Usage statistics",
@@ -113,7 +135,18 @@
     "noSub": "No active subscription.",
     "viewPlans": "⬆️ View plans →",
     "accountTitle": "Account information",
-    "memberSince": "Member since"
+    "memberSince": "Member since",
+    "changePassword": "Change password",
+    "currentPassword": "Current password",
+    "newPassword": "New password",
+    "confirmPassword": "Confirm new password",
+    "passwordChanged": "Password changed successfully!",
+    "billingHistory": "Billing history",
+    "noInvoices": "No invoices yet.",
+    "dangerZone": "Danger zone",
+    "deleteAccount": "Delete my account",
+    "deleteAccountDesc": "Permanently delete your account and all associated data. This action is irreversible.",
+    "deleteConfirmMsg": "Enter your password to confirm account deletion:"
   },
   "pricing": {
     "title": "Choose your plan",
@@ -131,6 +164,10 @@
   "tools": {
     "pageTitle": "🧰 Toolbox",
     "pageSubtitle": "All the tools you need, in one place",
+    "searchPlaceholder": "Search tools...",
+    "allCategories": "All",
+    "noResults": "No tools found for \"{{query}}\"",
+    "clearSearch": "Clear search",
     "tipTitle": "💡 Tip",
     "tipText": "Tools run directly in your browser — your content (text, images, files) never leaves your device. Only tool usage is recorded for quota management.",
     "categories": {
@@ -250,6 +287,7 @@
       "inputLabel": "Text to hash",
       "inputPlaceholder": "Enter your text...",
       "generateBtn": "Generate hashes",
+      "emptyAlert": "Please enter some text",
       "securityTitle": "⚠️ Security note",
       "securityNote": "Hash functions are one-way and cannot be reversed. SHA-1 is considered obsolete for security. Use SHA-256 or higher for critical applications."
     },
@@ -309,7 +347,12 @@
     "boxShadow": {
       "title": "📦 Box Shadow Generator",
       "subtitle": "Create custom CSS shadows",
+      "horizontal": "Horizontal: {{value}}px",
+      "vertical": "Vertical: {{value}}px",
+      "blur": "Blur: {{value}}px",
+      "spread": "Spread: {{value}}px",
       "opacityLabel": "Opacity: {{opacity}}",
+      "inset": "Inset",
       "cssCode": "CSS Code"
     },
     "impermanentLoss": {
@@ -529,6 +572,9 @@
   "enterprise": {
     "enterpriseOnly": "This feature requires an Enterprise plan.",
     "upgradeLink": "Upgrade to Enterprise →",
+    "apiDocs": {
+      "title": "📖 API Docs"
+    },
     "apiKeys": {
       "title": "🔑 API Keys",
       "description": "Generate API keys to integrate Useful Tools into your apps.",
@@ -616,6 +662,83 @@
         "down": "Down",
         "degraded": "Degraded",
         "unknown": "Unknown"
+      }
+    }
+  },
+  "landing": {
+    "badge": "21 professional tools in one place",
+    "getStarted": "Get started free",
+    "contactUs": "Contact sales",
+    "toolsCount": "...and 9 more tools available",
+    "hero": {
+      "title": "All the tools you need, in one app",
+      "subtitle": "21 professional tools for developers, designers, and entrepreneurs. Save time, ship faster.",
+      "cta": "Start for free",
+      "seePricing": "See pricing",
+      "noCreditCard": "No credit card required • Free plan always available"
+    },
+    "features": {
+      "title": "Everything you need",
+      "subtitle": "Built for productivity, designed for professionals",
+      "f1": { "title": "Lightning fast", "desc": "All tools run instantly in your browser — no loading, no waiting." },
+      "f2": { "title": "100% private", "desc": "Your data never leaves your device. Nothing is stored or shared." },
+      "f3": { "title": "EN & FR support", "desc": "Full bilingual interface — switch language anytime." },
+      "f4": { "title": "Usage analytics", "desc": "Track your activity with detailed usage stats and history." },
+      "f5": { "title": "Design tools", "desc": "Colors, gradients, shadows, favicons — everything for your UI." },
+      "f6": { "title": "Enterprise ready", "desc": "API access, white-label, SLA 99.9%, dedicated support." }
+    },
+    "pricing": {
+      "title": "Simple, transparent pricing",
+      "subtitle": "Start free, upgrade when you need more."
+    },
+    "cta": {
+      "title": "Ready to work smarter?",
+      "subtitle": "Join hundreds of professionals who save hours every week."
+    }
+  },
+  "notFound": {
+    "title": "Page not found",
+    "message": "The page you're looking for doesn't exist or has been moved.",
+    "backHome": "Back to home"
+  },
+  "footer": {
+    "terms": "Terms of Service",
+    "privacy": "Privacy Policy",
+    "copyright": "© {{year}} Useful Tools SaaS. All rights reserved."
+  },
+  "admin": {
+    "title": "Admin Panel",
+    "subtitle": "Internal dashboard — restricted to administrators",
+    "totalUsers": "Total users",
+    "proUsers": "Pro users",
+    "enterpriseUsers": "Enterprise users",
+    "totalUsage": "Total API calls",
+    "userList": "User list",
+    "plan": "Plan",
+    "joined": "Joined",
+    "usageToday": "Usage today",
+    "noUsers": "No users found.",
+    "fetchError": "Could not fetch data"
+  },
+  "legal": {
+    "lastUpdated": "Last updated: {{date}}",
+    "contact": "Contact",
+    "terms": {
+      "s1": { "title": "Acceptance of Terms", "body": "By accessing and using Useful Tools SaaS, you accept and agree to be bound by these Terms of Service. If you do not agree, please do not use the service." },
+      "s2": { "title": "Use of Service", "body": "You may use the service for lawful purposes only. You agree not to misuse the platform, attempt to gain unauthorized access, or use it in any way that could harm other users or the service itself." },
+      "s3": { "title": "Subscriptions and Billing", "body": "Paid plans are billed monthly or annually. Payments are processed securely through Stripe. Subscriptions renew automatically unless cancelled before the renewal date." },
+      "s4": { "title": "Data and Privacy", "body": "We respect your privacy. Tool usage runs locally in your browser and your content is not stored on our servers. Account data (email, usage stats) is stored securely. See our Privacy Policy for details." },
+      "s5": { "title": "Limitation of Liability", "body": "The service is provided 'as is' without warranty of any kind. We are not liable for any indirect, incidental, or consequential damages arising from your use of the service." }
+    },
+    "privacy": {
+      "s1": { "title": "Information We Collect", "body": "We collect your email address, name (optional), and usage statistics (which tools you use and how often) to provide and improve the service." },
+      "s2": { "title": "How We Use Your Information", "body": "Your information is used to manage your account, process payments, send transactional emails (password resets, receipts), and enforce usage quotas." },
+      "s3": { "title": "Data Storage and Security", "body": "Your data is stored in a secure PostgreSQL database. Passwords are hashed using bcrypt. We use HTTPS for all communications. We do not sell your data." },
+      "s4": { "title": "Cookies", "body": "We use a JWT token stored in localStorage for authentication. No third-party tracking cookies are used." },
+      "s5": { "title": "Data Retention", "body": "Your data is retained as long as your account is active. You can request account deletion at any time from the Settings page, which will permanently remove all your data." },
+      "gdpr": {
+        "title": "Your GDPR Rights",
+        "body": "If you are in the EU, you have the right to access, correct, or delete your personal data, and the right to data portability. Contact us to exercise these rights."
       }
     }
   }

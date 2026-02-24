@@ -18,7 +18,23 @@
     "loading": "Chargement...",
     "noAccount": "Pas encore de compte ?",
     "alreadyAccount": "Déjà un compte ?",
-    "error": "Une erreur est survenue"
+    "error": "Une erreur est survenue",
+    "forgotPassword": "Mot de passe oublié ?",
+    "forgotPasswordDesc": "Entrez votre adresse email pour recevoir un lien de réinitialisation.",
+    "sendResetLink": "Envoyer le lien",
+    "checkYourEmail": "Vérifiez votre boîte mail",
+    "resetLinkSent": "Nous avons envoyé un lien de réinitialisation à {{email}}. Vérifiez vos spams si nécessaire.",
+    "backToLogin": "Retour à la connexion",
+    "resetPassword": "Réinitialiser le mot de passe",
+    "resetPasswordDesc": "Entrez votre nouveau mot de passe ci-dessous.",
+    "newPassword": "Nouveau mot de passe",
+    "confirmPassword": "Confirmer le mot de passe",
+    "passwordMismatch": "Les mots de passe ne correspondent pas",
+    "passwordTooShort": "Le mot de passe doit contenir au moins 8 caractères",
+    "passwordResetSuccess": "Mot de passe réinitialisé avec succès !",
+    "redirectingToLogin": "Redirection vers la connexion dans quelques secondes...",
+    "invalidToken": "Lien invalide ou expiré",
+    "requestNewLink": "Demander un nouveau lien de réinitialisation"
   },
   "common": {
     "loading": "Chargement...",
@@ -35,7 +51,8 @@
     "unlimited": "Illimité ∞",
     "limitReached": "Limite atteinte",
     "viewPlans": "Voir les plans disponibles →",
-    "error": "Une erreur est survenue"
+    "error": "Une erreur est survenue",
+    "cancel": "Annuler"
   },
   "quota": {
     "title": "Utilisation",
@@ -57,7 +74,12 @@
     "viewOptions": "Voir les options",
     "settingsLabel": "Paramètres",
     "manageAccount": "Gérer mon compte",
-    "errorProfile": "Erreur lors de la récupération du profil"
+    "errorProfile": "Erreur lors de la récupération du profil",
+    "paymentSuccess": {
+      "title": "Paiement réussi ! 🎉",
+      "message": "Votre abonnement a été activé. Profitez de votre nouveau plan !",
+      "cta": "Commencer à explorer →"
+    }
   },
   "stats": {
     "title": "Statistiques d'utilisation",
@@ -113,7 +135,18 @@
     "noSub": "Aucun abonnement actif.",
     "viewPlans": "⬆️ Voir les plans →",
     "accountTitle": "Informations du compte",
-    "memberSince": "Membre depuis"
+    "memberSince": "Membre depuis",
+    "changePassword": "Changer le mot de passe",
+    "currentPassword": "Mot de passe actuel",
+    "newPassword": "Nouveau mot de passe",
+    "confirmPassword": "Confirmer le nouveau mot de passe",
+    "passwordChanged": "Mot de passe changé avec succès !",
+    "billingHistory": "Historique de facturation",
+    "noInvoices": "Aucune facture pour l'instant.",
+    "dangerZone": "Zone de danger",
+    "deleteAccount": "Supprimer mon compte",
+    "deleteAccountDesc": "Supprime définitivement votre compte et toutes les données associées. Cette action est irréversible.",
+    "deleteConfirmMsg": "Entrez votre mot de passe pour confirmer la suppression de votre compte :"
   },
   "pricing": {
     "title": "Choisissez votre plan",
@@ -131,6 +164,10 @@
   "tools": {
     "pageTitle": "🧰 Boîte à outils",
     "pageSubtitle": "Tous les outils dont vous avez besoin, au même endroit",
+    "searchPlaceholder": "Rechercher un outil...",
+    "allCategories": "Tous",
+    "noResults": "Aucun outil trouvé pour \"{{query}}\"",
+    "clearSearch": "Effacer la recherche",
     "tipTitle": "💡 Astuce",
     "tipText": "Les outils s'exécutent directement dans votre navigateur — vos contenus (textes, images, fichiers) ne quittent jamais votre appareil. Seule l'utilisation de l'outil est enregistrée pour la gestion des quotas.",
     "categories": {
@@ -250,6 +287,7 @@
       "inputLabel": "Texte à hasher",
       "inputPlaceholder": "Entrez votre texte...",
       "generateBtn": "Générer les hash",
+      "emptyAlert": "Veuillez entrer du texte",
       "securityTitle": "⚠️ Note de sécurité",
       "securityNote": "Les fonctions de hachage sont à sens unique et ne peuvent pas être inversées. SHA-1 est considéré comme obsolète pour la sécurité. Utilisez SHA-256 ou supérieur pour les applications critiques."
     },
@@ -309,7 +347,12 @@
     "boxShadow": {
       "title": "📦 Box Shadow Generator",
       "subtitle": "Créez des ombres CSS personnalisées",
+      "horizontal": "Horizontal : {{value}}px",
+      "vertical": "Vertical : {{value}}px",
+      "blur": "Blur : {{value}}px",
+      "spread": "Spread : {{value}}px",
       "opacityLabel": "Opacité : {{opacity}}",
+      "inset": "Inset",
       "cssCode": "Code CSS"
     },
     "impermanentLoss": {
@@ -529,6 +572,9 @@
   "enterprise": {
     "enterpriseOnly": "Cette fonctionnalité nécessite un plan Enterprise.",
     "upgradeLink": "Passer à Enterprise →",
+    "apiDocs": {
+      "title": "📖 Documentation API"
+    },
     "apiKeys": {
       "title": "🔑 Clés API",
       "description": "Générez des clés API pour intégrer Useful Tools dans vos applications.",
@@ -616,6 +662,83 @@
         "down": "En panne",
         "degraded": "Dégradé",
         "unknown": "Inconnu"
+      }
+    }
+  },
+  "landing": {
+    "badge": "21 outils professionnels au même endroit",
+    "getStarted": "Commencer gratuitement",
+    "contactUs": "Contacter les ventes",
+    "toolsCount": "...et 9 autres outils disponibles",
+    "hero": {
+      "title": "Tous les outils dont vous avez besoin, dans une seule app",
+      "subtitle": "21 outils professionnels pour les développeurs, designers et entrepreneurs. Gagnez du temps, livrez plus vite.",
+      "cta": "Commencer gratuitement",
+      "seePricing": "Voir les tarifs",
+      "noCreditCard": "Aucune carte bancaire requise • Plan gratuit toujours disponible"
+    },
+    "features": {
+      "title": "Tout ce dont vous avez besoin",
+      "subtitle": "Conçu pour la productivité, designé pour les professionnels",
+      "f1": { "title": "Ultra rapide", "desc": "Tous les outils s'exécutent instantanément dans votre navigateur — sans chargement, sans attente." },
+      "f2": { "title": "100% privé", "desc": "Vos données ne quittent jamais votre appareil. Rien n'est stocké ni partagé." },
+      "f3": { "title": "Support FR & EN", "desc": "Interface entièrement bilingue — changez de langue à tout moment." },
+      "f4": { "title": "Analytics d'utilisation", "desc": "Suivez votre activité avec des statistiques et historiques détaillés." },
+      "f5": { "title": "Outils de design", "desc": "Couleurs, dégradés, ombres, favicons — tout pour votre UI." },
+      "f6": { "title": "Enterprise ready", "desc": "Accès API, white-label, SLA 99,9%, support dédié." }
+    },
+    "pricing": {
+      "title": "Tarifs simples et transparents",
+      "subtitle": "Commencez gratuitement, passez à la vitesse supérieure quand vous en avez besoin."
+    },
+    "cta": {
+      "title": "Prêt à travailler plus intelligemment ?",
+      "subtitle": "Rejoignez des centaines de professionnels qui gagnent des heures chaque semaine."
+    }
+  },
+  "notFound": {
+    "title": "Page introuvable",
+    "message": "La page que vous cherchez n'existe pas ou a été déplacée.",
+    "backHome": "Retour à l'accueil"
+  },
+  "footer": {
+    "terms": "Conditions d'utilisation",
+    "privacy": "Politique de confidentialité",
+    "copyright": "© {{year}} Useful Tools SaaS. Tous droits réservés."
+  },
+  "admin": {
+    "title": "Panneau d'administration",
+    "subtitle": "Dashboard interne — réservé aux administrateurs",
+    "totalUsers": "Utilisateurs totaux",
+    "proUsers": "Utilisateurs Pro",
+    "enterpriseUsers": "Utilisateurs Enterprise",
+    "totalUsage": "Appels API totaux",
+    "userList": "Liste des utilisateurs",
+    "plan": "Plan",
+    "joined": "Inscrit le",
+    "usageToday": "Utilisation aujourd'hui",
+    "noUsers": "Aucun utilisateur trouvé.",
+    "fetchError": "Impossible de charger les données"
+  },
+  "legal": {
+    "lastUpdated": "Dernière mise à jour : {{date}}",
+    "contact": "Contact",
+    "terms": {
+      "s1": { "title": "Acceptation des conditions", "body": "En accédant et en utilisant Useful Tools SaaS, vous acceptez d'être lié par ces Conditions d'utilisation. Si vous n'acceptez pas, veuillez ne pas utiliser le service." },
+      "s2": { "title": "Utilisation du service", "body": "Vous ne pouvez utiliser le service qu'à des fins légales. Vous vous engagez à ne pas utiliser la plateforme de manière abusive, à ne pas tenter d'obtenir un accès non autorisé, ni à l'utiliser d'une manière qui pourrait nuire à d'autres utilisateurs ou au service." },
+      "s3": { "title": "Abonnements et facturation", "body": "Les plans payants sont facturés mensuellement ou annuellement. Les paiements sont traités de manière sécurisée via Stripe. Les abonnements se renouvellent automatiquement sauf annulation avant la date de renouvellement." },
+      "s4": { "title": "Données et confidentialité", "body": "Nous respectons votre vie privée. L'utilisation des outils s'effectue localement dans votre navigateur et votre contenu n'est pas stocké sur nos serveurs. Les données de compte (email, statistiques) sont stockées de manière sécurisée. Consultez notre Politique de confidentialité pour plus de détails." },
+      "s5": { "title": "Limitation de responsabilité", "body": "Le service est fourni « en l'état » sans garantie d'aucune sorte. Nous ne sommes pas responsables des dommages indirects, accessoires ou consécutifs découlant de votre utilisation du service." }
+    },
+    "privacy": {
+      "s1": { "title": "Informations que nous collectons", "body": "Nous collectons votre adresse email, votre nom (facultatif) et des statistiques d'utilisation (quels outils vous utilisez et à quelle fréquence) pour fournir et améliorer le service." },
+      "s2": { "title": "Comment nous utilisons vos informations", "body": "Vos informations sont utilisées pour gérer votre compte, traiter les paiements, envoyer des emails transactionnels (réinitialisations de mot de passe, reçus) et appliquer les quotas d'utilisation." },
+      "s3": { "title": "Stockage et sécurité des données", "body": "Vos données sont stockées dans une base de données PostgreSQL sécurisée. Les mots de passe sont hachés avec bcrypt. Nous utilisons HTTPS pour toutes les communications. Nous ne vendons pas vos données." },
+      "s4": { "title": "Cookies", "body": "Nous utilisons un token JWT stocké dans le localStorage pour l'authentification. Aucun cookie de suivi tiers n'est utilisé." },
+      "s5": { "title": "Conservation des données", "body": "Vos données sont conservées tant que votre compte est actif. Vous pouvez demander la suppression de votre compte à tout moment depuis la page Paramètres, ce qui supprimera définitivement toutes vos données." },
+      "gdpr": {
+        "title": "Vos droits RGPD",
+        "body": "Si vous êtes dans l'UE, vous avez le droit d'accéder, de corriger ou de supprimer vos données personnelles, ainsi que le droit à la portabilité des données. Contactez-nous pour exercer ces droits."
       }
     }
   }

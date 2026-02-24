@@ -24,6 +24,23 @@ const Settings = () => {
   const [savingWl, setSavingWl] = useState(false);
   const [wlSuccess, setWlSuccess] = useState('');
 
+  // Password change
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [savingPassword, setSavingPassword] = useState(false);
+  const [passwordMsg, setPasswordMsg] = useState('');
+  const [passwordErr, setPasswordErr] = useState('');
+
+  // Billing history
+  const [invoices, setInvoices] = useState([]);
+  const [loadingInvoices, setLoadingInvoices] = useState(false);
+
+  // Danger zone — delete account
+  const [deletePassword, setDeletePassword] = useState('');
+  const [deleting, setDeleting] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+
   const fetchProfile = useCallback(async () => {
     try {
       const res = await fetch(`${process.env.REACT_APP_API_URL}/api/user/profile`, {
@@ -58,9 +75,59 @@ const Settings = () => {
     } catch {}
   }, [token]);
 
+  const fetchInvoices = useCallback(async () => {
+    setLoadingInvoices(true);
+    try {
+      const res = await fetch(`${process.env.REACT_APP_API_URL}/api/subscription/invoices`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (res.ok) { const data = await res.json(); setInvoices(data.invoices || []); }
+    } catch {}
+    finally { setLoadingInvoices(false); }
+  }, [token]);
+
+  const handleChangePassword = async (e) => {
+    e.preventDefault();
+    setPasswordMsg(''); setPasswordErr('');
+    if (newPassword !== confirmPassword) return setPasswordErr(t('auth.passwordMismatch'));
+    if (newPassword.length < 8) return setPasswordErr(t('auth.passwordTooShort'));
+    setSavingPassword(true);
+    try {
+      const res = await fetch(`${process.env.REACT_APP_API_URL}/api/user/change-password`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        body: JSON.stringify({ currentPassword, newPassword })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error?.message || t('common.error'));
+      setPasswordMsg(t('settings.passwordChanged'));
+      setCurrentPassword(''); setNewPassword(''); setConfirmPassword('');
+    } catch (err) { setPasswordErr(err.message); }
+    finally { setSavingPassword(false); }
+  };
+
+  const handleDeleteAccount = async () => {
+    if (!deletePassword) return;
+    setDeleting(true);
+    try {
+      const res = await fetch(`${process.env.REACT_APP_API_URL}/api/user/account`, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        body: JSON.stringify({ password: deletePassword })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error?.message || t('common.error'));
+      // Account deleted — clear localStorage and redirect
+      localStorage.removeItem('token');
+      window.location.href = '/';
+    } catch (err) { setErrorMsg(err.message); setShowDeleteConfirm(false); }
+    finally { setDeleting(false); }
+  };
+
   useEffect(() => {
     fetchProfile();
-  }, [fetchProfile]);
+    fetchInvoices();
+  }, [fetchProfile, fetchInvoices]);
 
   useEffect(() => {
     if (profile?.subscription?.plan_name === 'enterprise') {
@@ -257,6 +324,91 @@ const Settings = () => {
               </span>
             </div>
           </div>
+        </div>
+
+        {/* Change Password */}
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
+          <h2 className="text-xl font-semibold text-gray-900 mb-4">{t('settings.changePassword')}</h2>
+          {passwordMsg && <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg text-green-700 text-sm">✅ {passwordMsg}</div>}
+          {passwordErr && <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">❌ {passwordErr}</div>}
+          <form onSubmit={handleChangePassword} className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{t('settings.currentPassword')}</label>
+              <input type="password" value={currentPassword} onChange={e => setCurrentPassword(e.target.value)} required
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="••••••••" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{t('settings.newPassword')}</label>
+              <input type="password" value={newPassword} onChange={e => setNewPassword(e.target.value)} required minLength={8}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="••••••••" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{t('settings.confirmPassword')}</label>
+              <input type="password" value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)} required
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="••••••••" />
+            </div>
+            <button type="submit" disabled={savingPassword}
+              className="w-full bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white font-semibold py-3 px-6 rounded-lg transition-colors">
+              {savingPassword ? t('common.saving') : t('settings.changePassword')}
+            </button>
+          </form>
+        </div>
+
+        {/* Billing History */}
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
+          <h2 className="text-xl font-semibold text-gray-900 mb-4">{t('settings.billingHistory')}</h2>
+          {loadingInvoices ? (
+            <div className="text-gray-400 text-sm">{t('common.loading')}</div>
+          ) : invoices.length === 0 ? (
+            <p className="text-gray-400 text-sm italic">{t('settings.noInvoices')}</p>
+          ) : (
+            <div className="divide-y divide-gray-100">
+              {invoices.map(inv => (
+                <div key={inv.id} className="flex items-center justify-between py-3 text-sm">
+                  <div>
+                    <div className="font-medium text-gray-900">{inv.description || 'Subscription payment'}</div>
+                    <div className="text-gray-400 text-xs">{new Date(inv.created_at).toLocaleDateString(i18n.language === 'fr' ? 'fr-FR' : 'en-US')}</div>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <span className="font-semibold text-gray-900">
+                      {inv.currency?.toUpperCase()} {(inv.amount / 100).toFixed(2)}
+                    </span>
+                    <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${inv.status === 'succeeded' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}`}>
+                      {inv.status}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Danger Zone */}
+        <div className="bg-white rounded-xl shadow-sm border border-red-200 p-6 mb-6">
+          <h2 className="text-xl font-semibold text-red-700 mb-2">⚠️ {t('settings.dangerZone')}</h2>
+          <p className="text-sm text-gray-500 mb-4">{t('settings.deleteAccountDesc')}</p>
+          {!showDeleteConfirm ? (
+            <button onClick={() => setShowDeleteConfirm(true)}
+              className="bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 font-medium px-4 py-2 rounded-lg text-sm transition-colors">
+              🗑️ {t('settings.deleteAccount')}
+            </button>
+          ) : (
+            <div className="space-y-3">
+              <p className="text-sm font-medium text-red-700">{t('settings.deleteConfirmMsg')}</p>
+              <input type="password" value={deletePassword} onChange={e => setDeletePassword(e.target.value)}
+                placeholder="••••••••" className="w-full px-4 py-3 border border-red-300 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-red-500" />
+              <div className="flex gap-3">
+                <button onClick={handleDeleteAccount} disabled={deleting || !deletePassword}
+                  className="flex-1 bg-red-600 hover:bg-red-700 disabled:opacity-50 text-white font-semibold py-2.5 rounded-lg text-sm transition-colors">
+                  {deleting ? t('common.loading') : t('settings.deleteAccount')}
+                </button>
+                <button onClick={() => { setShowDeleteConfirm(false); setDeletePassword(''); }}
+                  className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-2.5 rounded-lg text-sm transition-colors">
+                  {t('common.cancel')}
+                </button>
+              </div>
+            </div>
+          )}
         </div>
 
         {subscription?.plan_name === 'enterprise' && (<>

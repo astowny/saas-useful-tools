@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useQuota } from '../../hooks/useQuota';
 
 const JsonCsvConverter = () => {
+  const { t } = useTranslation();
   const { checkAndUseQuota, isChecking, quotaError } = useQuota();
   const [input, setInput] = useState('');
   const [output, setOutput] = useState('');
@@ -28,7 +30,7 @@ const JsonCsvConverter = () => {
       
       return csvRows.join('\n');
     } catch (error) {
-      throw new Error('JSON invalide');
+      throw new Error(t('toolPages.jsonCsv.invalidJson'));
     }
   };
 
@@ -51,7 +53,7 @@ const JsonCsvConverter = () => {
       
       return JSON.stringify(result, null, 2);
     } catch (error) {
-      throw new Error('CSV invalide');
+      throw new Error(t('toolPages.jsonCsv.invalidCsv'));
     }
   };
 
@@ -73,12 +75,12 @@ const JsonCsvConverter = () => {
     <div className="min-h-screen bg-gray-50">
       <div className="container mx-auto px-4 py-8 max-w-6xl">
         <Link to="/tools" className="text-blue-600 hover:text-blue-700 mb-6 inline-flex items-center gap-2">
-          ← Retour aux outils
+          {t('common.backToTools')}
         </Link>
 
         <div className="mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">🔄 JSON ↔ CSV Converter</h1>
-          <p className="text-gray-600">Convertissez entre JSON et CSV</p>
+          <h1 className="text-4xl font-bold text-gray-900 mb-2">{t('toolPages.jsonCsv.title')}</h1>
+          <p className="text-gray-600">{t('toolPages.jsonCsv.subtitle')}</p>
         </div>
 
         {quotaError && (
@@ -86,11 +88,11 @@ const JsonCsvConverter = () => {
             <div className="flex items-start gap-3">
               <span className="text-2xl">⛔</span>
               <div className="flex-1">
-                <h3 className="font-semibold text-red-900 mb-1">Limite atteinte</h3>
+                <h3 className="font-semibold text-red-900 mb-1">{t('common.limitReached')}</h3>
                 <p className="text-sm text-red-800">{quotaError.message}</p>
                 {quotaError.type === 'NO_SUBSCRIPTION' && (
                   <Link to="/pricing" className="inline-block mt-2 text-sm font-semibold text-red-700 underline hover:text-red-600">
-                    Voir les plans disponibles →
+                    {t('common.viewPlans')}
                   </Link>
                 )}
               </div>
@@ -150,7 +152,7 @@ const JsonCsvConverter = () => {
             disabled={isChecking}
             className="w-full mt-6 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white font-semibold py-3 px-6 rounded-lg transition-colors"
           >
-            {isChecking ? 'Vérification...' : 'Convertir'}
+            {isChecking ? t('common.verifying') : t('toolPages.jsonCsv.convertBtn')}
           </button>
         </div>
       </div>

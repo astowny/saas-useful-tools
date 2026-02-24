@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useQuota } from '../../hooks/useQuota';
 
 const Pomodoro = () => {
+  const { t } = useTranslation();
   const { checkAndUseQuota, isChecking, quotaError } = useQuota();
   const [minutes, setMinutes] = useState(25);
   const [seconds, setSeconds] = useState(0);
@@ -12,9 +14,9 @@ const Pomodoro = () => {
   const intervalRef = useRef(null);
 
   const modes = {
-    work: { duration: 25, label: 'Travail', color: 'bg-red-500' },
-    shortBreak: { duration: 5, label: 'Pause courte', color: 'bg-green-500' },
-    longBreak: { duration: 15, label: 'Pause longue', color: 'bg-blue-500' }
+    work: { duration: 25, label: t('toolPages.pomodoro.work'), color: 'bg-red-500' },
+    shortBreak: { duration: 5, label: t('toolPages.pomodoro.shortBreak'), color: 'bg-green-500' },
+    longBreak: { duration: 15, label: t('toolPages.pomodoro.longBreak'), color: 'bg-blue-500' }
   };
 
   useEffect(() => {
@@ -82,12 +84,12 @@ const Pomodoro = () => {
     <div className="min-h-screen bg-gray-50">
       <div className="container mx-auto px-4 py-8 max-w-2xl">
         <Link to="/tools" className="text-blue-600 hover:text-blue-700 mb-6 inline-flex items-center gap-2">
-          ← Retour aux outils
+          {t('common.backToTools')}
         </Link>
-        
+
         <div className="mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">⏱️ Pomodoro Timer</h1>
-          <p className="text-gray-600">Technique de gestion du temps</p>
+          <h1 className="text-4xl font-bold text-gray-900 mb-2">{t('toolPages.pomodoro.title')}</h1>
+          <p className="text-gray-600">{t('toolPages.pomodoro.subtitle')}</p>
         </div>
 
         {quotaError && (
@@ -95,10 +97,10 @@ const Pomodoro = () => {
             <div className="flex items-start gap-3">
               <span className="text-2xl">⛔</span>
               <div className="flex-1">
-                <h3 className="font-semibold text-red-900 mb-1">Limite atteinte</h3>
+                <h3 className="font-semibold text-red-900 mb-1">{t('common.limitReached')}</h3>
                 <p className="text-sm text-red-800">{quotaError.message}</p>
                 <Link to="/pricing" className="inline-block mt-2 text-sm font-semibold text-red-700 underline hover:text-red-600">
-                  Voir les plans →
+                  {t('common.viewPlans')}
                 </Link>
               </div>
             </div>
@@ -125,7 +127,7 @@ const Pomodoro = () => {
               {formatTime(minutes, seconds)}
             </div>
             <div className="text-xl text-gray-600">
-              Sessions complétées: {sessions}
+              {t('toolPages.pomodoro.sessionsCompleted', { count: sessions })}
             </div>
           </div>
 
@@ -135,23 +137,23 @@ const Pomodoro = () => {
               disabled={isChecking}
               className="flex-1 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white font-semibold py-4 px-6 rounded-lg transition-colors text-lg"
             >
-              {isChecking ? 'Vérification...' : isActive ? '⏸️ Pause' : '▶️ Démarrer'}
+              {isChecking ? t('common.verifying') : isActive ? t('toolPages.pomodoro.pause') : t('toolPages.pomodoro.start')}
             </button>
             <button
               onClick={resetTimer}
               className="bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-4 px-6 rounded-lg transition-colors"
             >
-              🔄 Reset
+              {t('toolPages.pomodoro.reset')}
             </button>
           </div>
         </div>
 
         <div className="mt-6 bg-blue-50 border border-blue-200 rounded-xl p-6">
-          <h3 className="font-semibold text-blue-900 mb-2">💡 Technique Pomodoro</h3>
+          <h3 className="font-semibold text-blue-900 mb-2">{t('toolPages.pomodoro.tipTitle')}</h3>
           <ul className="text-sm text-blue-800 space-y-1 list-disc list-inside">
-            <li>Travaillez pendant 25 minutes</li>
-            <li>Prenez une pause de 5 minutes</li>
-            <li>Après 4 sessions, prenez une pause de 15 minutes</li>
+            <li>{t('toolPages.pomodoro.tip1')}</li>
+            <li>{t('toolPages.pomodoro.tip2')}</li>
+            <li>{t('toolPages.pomodoro.tip3')}</li>
           </ul>
         </div>
       </div>

@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useQuota } from '../../hooks/useQuota';
 
 const JwtDecoder = () => {
+  const { t } = useTranslation();
   const { checkAndUseQuota, isChecking, quotaError: quotaErr } = useQuota();
   const [jwt, setJwt] = useState('');
   const [decoded, setDecoded] = useState(null);
@@ -16,7 +18,7 @@ const JwtDecoder = () => {
       const parts = jwt.split('.');
       
       if (parts.length !== 3) {
-        throw new Error('JWT invalide - doit contenir 3 parties séparées par des points');
+        throw new Error(t('toolPages.jwt.invalidError'));
       }
 
       const header = JSON.parse(atob(parts[0]));
@@ -41,12 +43,12 @@ const JwtDecoder = () => {
     <div className="min-h-screen bg-gray-50">
       <div className="container mx-auto px-4 py-8 max-w-4xl">
         <Link to="/tools" className="text-blue-600 hover:text-blue-700 mb-6 inline-flex items-center gap-2">
-          ← Retour aux outils
+          {t('common.backToTools')}
         </Link>
-        
+
         <div className="mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">🔓 JWT Decoder</h1>
-          <p className="text-gray-600">Décodez et inspectez les JSON Web Tokens</p>
+          <h1 className="text-4xl font-bold text-gray-900 mb-2">{t('toolPages.jwt.title')}</h1>
+          <p className="text-gray-600">{t('toolPages.jwt.subtitle')}</p>
         </div>
 
         {quotaErr && (
@@ -54,11 +56,11 @@ const JwtDecoder = () => {
             <div className="flex items-start gap-3">
               <span className="text-2xl">⛔</span>
               <div className="flex-1">
-                <h3 className="font-semibold text-red-900 mb-1">Limite atteinte</h3>
+                <h3 className="font-semibold text-red-900 mb-1">{t('common.limitReached')}</h3>
                 <p className="text-sm text-red-800">{quotaErr.message}</p>
                 {quotaErr.type === 'NO_SUBSCRIPTION' && (
                   <Link to="/pricing" className="inline-block mt-2 text-sm font-semibold text-red-700 underline hover:text-red-600">
-                    Voir les plans disponibles →
+                    {t('common.viewPlans')}
                   </Link>
                 )}
               </div>
@@ -83,7 +85,7 @@ const JwtDecoder = () => {
             disabled={isChecking}
             className="w-full bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white font-semibold py-3 px-6 rounded-lg transition-colors"
           >
-            {isChecking ? 'Vérification...' : 'Décoder JWT'}
+            {isChecking ? t('common.verifying') : t('toolPages.jwt.decodeBtn')}
           </button>
 
           {error && (
@@ -102,7 +104,7 @@ const JwtDecoder = () => {
                   onClick={() => copyToClipboard(decoded.header)}
                   className="text-blue-600 hover:text-blue-700 text-sm"
                 >
-                  📋 Copier
+                  {t('common.copy')}
                 </button>
               </div>
               <pre className="bg-gray-50 border border-gray-200 rounded-lg p-4 overflow-x-auto">
@@ -117,7 +119,7 @@ const JwtDecoder = () => {
                   onClick={() => copyToClipboard(decoded.payload)}
                   className="text-blue-600 hover:text-blue-700 text-sm"
                 >
-                  📋 Copier
+                  {t('common.copy')}
                 </button>
               </div>
               <pre className="bg-gray-50 border border-gray-200 rounded-lg p-4 overflow-x-auto">
@@ -135,9 +137,9 @@ const JwtDecoder = () => {
         )}
 
         <div className="mt-6 bg-red-50 border border-red-200 rounded-xl p-6">
-          <h3 className="font-semibold text-red-900 mb-2">⚠️ Avertissement de sécurité</h3>
+          <h3 className="font-semibold text-red-900 mb-2">{t('toolPages.jwt.warningTitle')}</h3>
           <p className="text-sm text-red-800">
-            Cet outil décode uniquement le JWT. Il ne vérifie PAS la signature. Ne partagez jamais vos tokens JWT publiquement car ils peuvent contenir des informations sensibles.
+            {t('toolPages.jwt.warningText')}
           </p>
         </div>
       </div>

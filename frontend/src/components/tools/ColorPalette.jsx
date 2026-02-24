@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useQuota } from '../../hooks/useQuota';
 
 const ColorPalette = () => {
+  const { t } = useTranslation();
   const { checkAndUseQuota, isChecking, quotaError } = useQuota();
   const [baseColor, setBaseColor] = useState('#3B82F6');
   const [palette, setPalette] = useState([]);
@@ -75,12 +77,12 @@ const ColorPalette = () => {
     <div className="min-h-screen bg-gray-50">
       <div className="container mx-auto px-4 py-8 max-w-4xl">
         <Link to="/tools" className="text-blue-600 hover:text-blue-700 mb-6 inline-flex items-center gap-2">
-          ← Retour aux outils
+          {t('common.backToTools')}
         </Link>
-        
+
         <div className="mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">🎨 Générateur de palettes</h1>
-          <p className="text-gray-600">Créez des palettes de couleurs harmonieuses</p>
+          <h1 className="text-4xl font-bold text-gray-900 mb-2">{t('toolPages.colorPalette.title')}</h1>
+          <p className="text-gray-600">{t('toolPages.colorPalette.subtitle')}</p>
         </div>
 
         {quotaError && (
@@ -88,11 +90,11 @@ const ColorPalette = () => {
             <div className="flex items-start gap-3">
               <span className="text-2xl">⛔</span>
               <div className="flex-1">
-                <h3 className="font-semibold text-red-900 mb-1">Limite atteinte</h3>
+                <h3 className="font-semibold text-red-900 mb-1">{t('common.limitReached')}</h3>
                 <p className="text-sm text-red-800">{quotaError.message}</p>
                 {quotaError.type === 'NO_SUBSCRIPTION' && (
                   <Link to="/pricing" className="inline-block mt-2 text-sm font-semibold text-red-700 underline hover:text-red-600">
-                    Voir les plans disponibles →
+                    {t('common.viewPlans')}
                   </Link>
                 )}
               </div>
@@ -102,7 +104,7 @@ const ColorPalette = () => {
 
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
           <div className="mb-6">
-            <label className="block text-sm font-medium text-gray-700 mb-2">Couleur de base</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">{t('toolPages.colorPalette.baseColor')}</label>
             <div className="flex gap-4">
               <input
                 type="color"
@@ -126,35 +128,35 @@ const ColorPalette = () => {
               disabled={isChecking}
               className="py-3 px-4 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white font-semibold rounded-lg transition-colors"
             >
-              {isChecking ? '...' : 'Monochromatique'}
+              {isChecking ? '...' : t('toolPages.colorPalette.monochromatic')}
             </button>
             <button
               onClick={generateComplementary}
               disabled={isChecking}
               className="py-3 px-4 bg-purple-600 hover:bg-purple-700 disabled:opacity-50 text-white font-semibold rounded-lg transition-colors"
             >
-              {isChecking ? '...' : 'Complémentaire'}
+              {isChecking ? '...' : t('toolPages.colorPalette.complementary')}
             </button>
             <button
               onClick={generateAnalogous}
               disabled={isChecking}
               className="py-3 px-4 bg-green-600 hover:bg-green-700 disabled:opacity-50 text-white font-semibold rounded-lg transition-colors"
             >
-              {isChecking ? '...' : 'Analogue'}
+              {isChecking ? '...' : t('toolPages.colorPalette.analogous')}
             </button>
             <button
               onClick={generateTriadic}
               disabled={isChecking}
               className="py-3 px-4 bg-orange-600 hover:bg-orange-700 disabled:opacity-50 text-white font-semibold rounded-lg transition-colors"
             >
-              {isChecking ? '...' : 'Triadique'}
+              {isChecking ? '...' : t('toolPages.colorPalette.triadic')}
             </button>
           </div>
         </div>
 
         {palette.length > 0 && (
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            <h3 className="text-xl font-semibold text-gray-900 mb-4">Votre palette</h3>
+            <h3 className="text-xl font-semibold text-gray-900 mb-4">{t('toolPages.colorPalette.yourPalette')}</h3>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
               {palette.map((color, index) => (
                 <div key={index} className="text-center">
@@ -162,14 +164,14 @@ const ColorPalette = () => {
                     className="h-24 rounded-lg mb-2 cursor-pointer border border-gray-200 hover:scale-105 transition-transform"
                     style={{ backgroundColor: color }}
                     onClick={() => copyColor(color)}
-                    title="Cliquer pour copier"
+                    title={t('toolPages.colorPalette.clickToCopy')}
                   />
                   <div className="text-sm font-mono text-gray-700">{color}</div>
                   <button
                     onClick={() => copyColor(color)}
                     className="text-xs text-blue-600 hover:text-blue-700 mt-1"
                   >
-                    Copier
+                    {t('toolPages.colorPalette.copy')}
                   </button>
                 </div>
               ))}

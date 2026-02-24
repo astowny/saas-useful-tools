@@ -1,9 +1,11 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const crypto = require('crypto');
 const validator = require('validator');
 const db = require('../config/database');
 const { authenticateToken } = require('../middleware/auth');
+const { sendPasswordResetEmail, sendWelcomeEmail } = require('../utils/mailer');
 
 const router = express.Router();
 
@@ -60,6 +62,9 @@ router.post('/register', async (req, res) => {
       process.env.JWT_SECRET,
       { expiresIn: process.env.JWT_EXPIRES_IN || '7d' }
     );
+
+    // Send welcome email (non-blocking)
+    sendWelcomeEmail({ to: email, name: fullName }).catch(err => console.error('Welcome email error:', err));
 
     res.status(201).json({
       message: 'Compte créé avec succès',
@@ -175,6 +180,81 @@ router.get('/me', authenticateToken, async (req, res) => {
     });
   } catch (error) {
     console.error('Get user error:', error);
+    res.status(500).json({ error: { message: 'Erreur serveur' } });
+  }
+});
+
+/**
+ * POST /api/auth/forgot-password
+ * Request a password reset link
+ */
+router.post('/forgot-password', async (req, res) => {
+  try {
+    const { email } = req.body;
+    if (!email || !validator.isEmail(email)) {
+      return res.status(400).json({ error: { message: 'Email invalide' } });
+    }
+
+    const result = await db.query('SELECT id, email FROM users WHERE email = $1', [email]);
+    // Always return 200 to prevent email enumeration
+    if (result.rows.length === 0) {
+      return res.json({ message: 'If this email exists, a reset link has been sent.' });
+    }
+
+    const user = result.rows[0];
+    const token = crypto.randomBytes(32).toString('hex');
+    const expiresAt = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
+
+    // Invalidate previous tokens
+    await db.query('UPDATE password_reset_tokens SET used = TRUE WHERE user_id = $1 AND used = FALSE', [user.id]);
+
+    await db.query(
+      'INSERT INTO password_reset_tokens (user_id, token, expires_at) VALUES ($1, $2, $3)',
+      [user.id, token, expiresAt]
+    );
+
+    const resetUrl = `${process.env.FRONTEND_URL}/reset-password?token=${token}`;
+    await sendPasswordResetEmail({ to: user.email, resetUrl });
+
+    res.json({ message: 'If this email exists, a reset link has been sent.' });
+  } catch (error) {
+    console.error('Forgot password error:', error);
+    res.status(500).json({ error: { message: 'Erreur serveur' } });
+  }
+});
+
+/**
+ * POST /api/auth/reset-password
+ * Reset password using token
+ */
+router.post('/reset-password', async (req, res) => {
+  try {
+    const { token, password } = req.body;
+    if (!token || !password) {
+      return res.status(400).json({ error: { message: 'Token et mot de passe requis' } });
+    }
+    if (password.length < 8) {
+      return res.status(400).json({ error: { message: 'Le mot de passe doit contenir au moins 8 caractères' } });
+    }
+
+    const result = await db.query(
+      'SELECT * FROM password_reset_tokens WHERE token = $1 AND used = FALSE AND expires_at > NOW()',
+      [token]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(400).json({ error: { message: 'Token invalide ou expiré' } });
+    }
+
+    const resetToken = result.rows[0];
+    const passwordHash = await bcrypt.hash(password, 10);
+
+    await db.query('UPDATE users SET password_hash = $1 WHERE id = $2', [passwordHash, resetToken.user_id]);
+    await db.query('UPDATE password_reset_tokens SET used = TRUE WHERE id = $1', [resetToken.id]);
+
+    res.json({ message: 'Mot de passe réinitialisé avec succès' });
+  } catch (error) {
+    console.error('Reset password error:', error);
     res.status(500).json({ error: { message: 'Erreur serveur' } });
   }
 });

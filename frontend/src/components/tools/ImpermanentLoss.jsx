@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useQuota } from '../../hooks/useQuota';
 
 const ImpermanentLoss = () => {
+  const { t } = useTranslation();
   const { checkAndUseQuota, quotaError } = useQuota();
   const quotaChecked = useRef(false);
   const [initialPriceA, setInitialPriceA] = useState(100);
@@ -59,12 +61,12 @@ const ImpermanentLoss = () => {
     <div className="min-h-screen bg-gray-50">
       <div className="container mx-auto px-4 py-8 max-w-5xl">
         <Link to="/tools" className="text-blue-600 hover:text-blue-700 mb-6 inline-flex items-center gap-2">
-          ← Retour aux outils
+          {t('common.backToTools')}
         </Link>
 
         <div className="mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">💸 Calculateur Impermanent Loss</h1>
-          <p className="text-gray-600">Calculez la perte impermanente dans les pools de liquidité</p>
+          <h1 className="text-4xl font-bold text-gray-900 mb-2">{t('toolPages.impermanentLoss.title')}</h1>
+          <p className="text-gray-600">{t('toolPages.impermanentLoss.subtitle')}</p>
         </div>
 
         {quotaError && (
@@ -72,10 +74,10 @@ const ImpermanentLoss = () => {
             <div className="flex items-start gap-3">
               <span className="text-2xl">⛔</span>
               <div className="flex-1">
-                <h3 className="font-semibold text-red-900 mb-1">Limite atteinte</h3>
+                <h3 className="font-semibold text-red-900 mb-1">{t('common.limitReached')}</h3>
                 <p className="text-sm text-red-800">{quotaError.message}</p>
                 <Link to="/pricing" className="inline-block mt-2 text-sm font-semibold text-red-700 underline hover:text-red-600">
-                  Voir les plans →
+                  {t('common.viewPlans')}
                 </Link>
               </div>
             </div>
@@ -84,12 +86,12 @@ const ImpermanentLoss = () => {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-6">Prix initiaux</h2>
-            
+            <h2 className="text-xl font-semibold text-gray-900 mb-6">{t('toolPages.impermanentLoss.initialPrices')}</h2>
+
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Prix Token A ($)
+                  {t('toolPages.impermanentLoss.tokenALabel')}
                 </label>
                 <input
                   type="number"
@@ -101,7 +103,7 @@ const ImpermanentLoss = () => {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Prix Token B ($)
+                  {t('toolPages.impermanentLoss.tokenBLabel')}
                 </label>
                 <input
                   type="number"
@@ -113,7 +115,7 @@ const ImpermanentLoss = () => {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Montant investi ($)
+                  {t('toolPages.impermanentLoss.investedLabel')}
                 </label>
                 <input
                   type="number"
@@ -126,12 +128,12 @@ const ImpermanentLoss = () => {
           </div>
 
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-6">Prix actuels</h2>
-            
+            <h2 className="text-xl font-semibold text-gray-900 mb-6">{t('toolPages.impermanentLoss.currentPrices')}</h2>
+
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Prix Token A ($)
+                  {t('toolPages.impermanentLoss.tokenALabel')}
                 </label>
                 <input
                   type="number"
@@ -140,13 +142,13 @@ const ImpermanentLoss = () => {
                   className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
                 <p className="text-xs text-gray-500 mt-1">
-                  Variation: {results.priceChangeA > 0 ? '+' : ''}{results.priceChangeA}%
+                  {t('toolPages.impermanentLoss.variation')} {results.priceChangeA > 0 ? '+' : ''}{results.priceChangeA}%
                 </p>
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Prix Token B ($)
+                  {t('toolPages.impermanentLoss.tokenBLabel')}
                 </label>
                 <input
                   type="number"
@@ -155,7 +157,7 @@ const ImpermanentLoss = () => {
                   className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
                 <p className="text-xs text-gray-500 mt-1">
-                  Variation: {results.priceChangeB > 0 ? '+' : ''}{results.priceChangeB}%
+                  {t('toolPages.impermanentLoss.variation')} {results.priceChangeB > 0 ? '+' : ''}{results.priceChangeB}%
                 </p>
               </div>
             </div>
@@ -163,27 +165,27 @@ const ImpermanentLoss = () => {
         </div>
 
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-6">Résultats</h2>
-          
+          <h2 className="text-xl font-semibold text-gray-900 mb-6">{t('toolPages.impermanentLoss.resultsTitle')}</h2>
+
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
-              <div className="text-sm text-red-700 mb-1">Perte impermanente</div>
+              <div className="text-sm text-red-700 mb-1">{t('toolPages.impermanentLoss.impLoss')}</div>
               <div className="text-2xl font-bold text-red-900">{results.impermanentLossPercent}%</div>
             </div>
 
             <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
-              <div className="text-sm text-blue-700 mb-1">Valeur si HODL</div>
+              <div className="text-sm text-blue-700 mb-1">{t('toolPages.impermanentLoss.hodlValue')}</div>
               <div className="text-2xl font-bold text-blue-900">${results.currentValueHold}</div>
             </div>
 
             <div className="p-4 bg-purple-50 border border-purple-200 rounded-lg">
-              <div className="text-sm text-purple-700 mb-1">Valeur dans le pool</div>
+              <div className="text-sm text-purple-700 mb-1">{t('toolPages.impermanentLoss.poolValue')}</div>
               <div className="text-2xl font-bold text-purple-900">${results.currentValuePool}</div>
             </div>
 
             <div className={`p-4 rounded-lg border ${parseFloat(results.difference) >= 0 ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'}`}>
               <div className={`text-sm mb-1 ${parseFloat(results.difference) >= 0 ? 'text-green-700' : 'text-red-700'}`}>
-                Différence
+                {t('toolPages.impermanentLoss.difference')}
               </div>
               <div className={`text-2xl font-bold ${parseFloat(results.difference) >= 0 ? 'text-green-900' : 'text-red-900'}`}>
                 ${results.difference}
@@ -193,9 +195,9 @@ const ImpermanentLoss = () => {
         </div>
 
         <div className="bg-blue-50 border border-blue-200 rounded-xl p-6">
-          <h3 className="font-semibold text-blue-900 mb-2">💡 Qu'est-ce que la perte impermanente ?</h3>
+          <h3 className="font-semibold text-blue-900 mb-2">{t('toolPages.impermanentLoss.infoTitle')}</h3>
           <p className="text-sm text-blue-800">
-            La perte impermanente survient lorsque le prix des tokens dans un pool de liquidité change par rapport au moment du dépôt. Plus la variation de prix est importante, plus la perte impermanente est élevée. Cette perte peut être compensée par les frais de trading générés par le pool.
+            {t('toolPages.impermanentLoss.infoText')}
           </p>
         </div>
       </div>

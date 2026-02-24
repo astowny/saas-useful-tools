@@ -79,6 +79,7 @@ const enterpriseApiKeysRoutes = require('./routes/enterprise-api-keys');
 const enterpriseSupportRoutes = require('./routes/enterprise-support');
 const enterpriseWhiteLabelRoutes = require('./routes/enterprise-white-label');
 const enterpriseSlaRoutes = require('./routes/enterprise-sla');
+const adminRoutes = require('./routes/admin');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -162,6 +163,9 @@ app.use('/api/enterprise/api-keys', enterpriseApiKeysRoutes);
 app.use('/api/enterprise/support', enterpriseSupportRoutes);
 app.use('/api/enterprise/white-label', enterpriseWhiteLabelRoutes);
 app.use('/api/enterprise/sla', enterpriseSlaRoutes);
+
+// Admin routes
+app.use('/api/admin', adminRoutes);
 
 // Health check
 app.get('/health', (req, res) => {
@@ -267,6 +271,20 @@ const ensureEnterpriseSchema = async () => {
       DROP TRIGGER IF EXISTS update_white_label_config_updated_at ON white_label_config;
       CREATE TRIGGER update_white_label_config_updated_at BEFORE UPDATE ON white_label_config
         FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+    `);
+
+    // 6. password_reset_tokens table
+    await db.query(`
+      CREATE TABLE IF NOT EXISTS password_reset_tokens (
+        id SERIAL PRIMARY KEY,
+        user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+        token VARCHAR(64) NOT NULL UNIQUE,
+        expires_at TIMESTAMP NOT NULL,
+        used BOOLEAN DEFAULT FALSE,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+      CREATE INDEX IF NOT EXISTS idx_reset_tokens_token ON password_reset_tokens(token);
+      CREATE INDEX IF NOT EXISTS idx_reset_tokens_user_id ON password_reset_tokens(user_id);
     `);
 
     console.log('✅ Enterprise schema ready');

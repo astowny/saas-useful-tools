@@ -1,8 +1,10 @@
 import React, { useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useQuota } from '../../hooks/useQuota';
 
 const FaviconGenerator = () => {
+  const { t } = useTranslation();
   const { checkAndUseQuota, isChecking, quotaError } = useQuota();
   const [text, setText] = useState('A');
   const [bgColor, setBgColor] = useState('#3B82F6');
@@ -47,12 +49,12 @@ const FaviconGenerator = () => {
     <div className="min-h-screen bg-gray-50">
       <div className="container mx-auto px-4 py-8 max-w-4xl">
         <Link to="/tools" className="text-blue-600 hover:text-blue-700 mb-6 inline-flex items-center gap-2">
-          ← Retour aux outils
+          {t('common.backToTools')}
         </Link>
-        
+
         <div className="mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">🖼️ Générateur de Favicon</h1>
-          <p className="text-gray-600">Créez un favicon simple avec une lettre</p>
+          <h1 className="text-4xl font-bold text-gray-900 mb-2">{t('toolPages.favicon.title')}</h1>
+          <p className="text-gray-600">{t('toolPages.favicon.subtitle')}</p>
         </div>
 
         {quotaError && (
@@ -60,11 +62,11 @@ const FaviconGenerator = () => {
             <div className="flex items-start gap-3">
               <span className="text-2xl">⛔</span>
               <div className="flex-1">
-                <h3 className="font-semibold text-red-900 mb-1">Limite atteinte</h3>
+                <h3 className="font-semibold text-red-900 mb-1">{t('common.limitReached')}</h3>
                 <p className="text-sm text-red-800">{quotaError.message}</p>
                 {quotaError.type === 'NO_SUBSCRIPTION' && (
                   <Link to="/pricing" className="inline-block mt-2 text-sm font-semibold text-red-700 underline hover:text-red-600">
-                    Voir les plans disponibles →
+                    {t('common.viewPlans')}
                   </Link>
                 )}
               </div>
@@ -77,7 +79,7 @@ const FaviconGenerator = () => {
           
           <div className="space-y-4 mb-6">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Lettre ou Emoji</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">{t('toolPages.favicon.letterLabel')}</label>
               <input
                 type="text"
                 maxLength="2"
@@ -90,7 +92,7 @@ const FaviconGenerator = () => {
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Couleur de fond</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">{t('toolPages.favicon.bgColorLabel')}</label>
                 <div className="flex gap-2">
                   <input
                     type="color"
@@ -108,7 +110,7 @@ const FaviconGenerator = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Couleur du texte</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">{t('toolPages.favicon.textColorLabel')}</label>
                 <div className="flex gap-2">
                   <input
                     type="color"
@@ -127,7 +129,7 @@ const FaviconGenerator = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Taille du texte: {fontSize}px</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">{t('toolPages.favicon.fontSizeLabel', { size: fontSize })}</label>
               <input
                 type="range"
                 min="16"
@@ -144,12 +146,12 @@ const FaviconGenerator = () => {
             disabled={isChecking}
             className="w-full bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white font-semibold py-3 px-6 rounded-lg transition-colors mb-6"
           >
-            {isChecking ? 'Vérification...' : 'Générer Favicon'}
+            {isChecking ? t('common.verifying') : t('toolPages.favicon.generateBtn')}
           </button>
 
           {favicon && (
             <div className="text-center">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Aperçu</h3>
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('toolPages.favicon.preview')}</h3>
               <div className="inline-block p-6 bg-gray-100 rounded-lg mb-4">
                 <img src={favicon} alt="Favicon" className="w-16 h-16" />
               </div>
@@ -158,7 +160,7 @@ const FaviconGenerator = () => {
                   onClick={downloadFavicon}
                   className="bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors"
                 >
-                  📥 Télécharger (64x64)
+                  {t('toolPages.favicon.downloadBtn')}
                 </button>
               </div>
             </div>

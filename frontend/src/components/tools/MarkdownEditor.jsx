@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useQuota } from '../../hooks/useQuota';
 
 const MarkdownEditor = () => {
+  const { t } = useTranslation();
   const { checkAndUseQuota, quotaError } = useQuota();
   const quotaChecked = useRef(false);
   const [markdown, setMarkdown] = useState('# Titre\n\n## Sous-titre\n\nVotre texte **en gras** et *en italique*.\n\n- Liste item 1\n- Liste item 2\n\n```javascript\nconst hello = "world";\n```');
@@ -56,12 +58,12 @@ const MarkdownEditor = () => {
     <div className="min-h-screen bg-gray-50">
       <div className="container mx-auto px-4 py-8 max-w-7xl">
         <Link to="/tools" className="text-blue-600 hover:text-blue-700 mb-6 inline-flex items-center gap-2">
-          ← Retour aux outils
+          {t('common.backToTools')}
         </Link>
 
         <div className="mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">✍️ Éditeur Markdown</h1>
-          <p className="text-gray-600">Écrivez et prévisualisez du Markdown en temps réel</p>
+          <h1 className="text-4xl font-bold text-gray-900 mb-2">{t('toolPages.markdown.title')}</h1>
+          <p className="text-gray-600">{t('toolPages.markdown.subtitle')}</p>
         </div>
 
         {quotaError && (
@@ -69,10 +71,10 @@ const MarkdownEditor = () => {
             <div className="flex items-start gap-3">
               <span className="text-2xl">⛔</span>
               <div className="flex-1">
-                <h3 className="font-semibold text-red-900 mb-1">Limite atteinte</h3>
+                <h3 className="font-semibold text-red-900 mb-1">{t('common.limitReached')}</h3>
                 <p className="text-sm text-red-800">{quotaError.message}</p>
                 <Link to="/pricing" className="inline-block mt-2 text-sm font-semibold text-red-700 underline hover:text-red-600">
-                  Voir les plans →
+                  {t('common.viewPlans')}
                 </Link>
               </div>
             </div>
@@ -82,24 +84,24 @@ const MarkdownEditor = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-semibold text-gray-900">Markdown</h2>
+              <h2 className="text-lg font-semibold text-gray-900">{t('toolPages.markdown.editorLabel')}</h2>
               <button
                 onClick={copyMarkdown}
                 className="text-blue-600 hover:text-blue-700 text-sm"
               >
-                📋 Copier
+                {t('common.copy')}
               </button>
             </div>
             <textarea
               value={markdown}
               onChange={(e) => setMarkdown(e.target.value)}
               className="w-full h-[600px] px-4 py-3 bg-white border border-gray-300 rounded-lg text-gray-900 font-mono text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
-              placeholder="Écrivez votre Markdown ici..."
+              placeholder={t('toolPages.markdown.placeholder')}
             />
           </div>
 
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Aperçu</h2>
+            <h2 className="text-lg font-semibold text-gray-900 mb-4">{t('toolPages.markdown.previewLabel')}</h2>
             <div
               className="prose max-w-none h-[600px] overflow-y-auto"
               dangerouslySetInnerHTML={{ __html: parseMarkdown(markdown) }}
@@ -108,7 +110,7 @@ const MarkdownEditor = () => {
         </div>
 
         <div className="mt-6 bg-blue-50 border border-blue-200 rounded-xl p-6">
-          <h3 className="font-semibold text-blue-900 mb-2">💡 Syntaxe Markdown</h3>
+          <h3 className="font-semibold text-blue-900 mb-2">{t('toolPages.markdown.syntaxTitle')}</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-blue-800">
             <div>
               <div className="font-mono"># Titre 1</div>

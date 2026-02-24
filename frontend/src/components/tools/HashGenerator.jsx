@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useQuota } from '../../hooks/useQuota';
 
 const HashGenerator = () => {
+  const { t } = useTranslation();
   const { checkAndUseQuota, isChecking, quotaError } = useQuota();
   const [input, setInput] = useState('');
   const [hashes, setHashes] = useState({});
@@ -19,7 +21,7 @@ const HashGenerator = () => {
     const result = await checkAndUseQuota('hash-generator', 'developer');
     if (!result.success) return;
     if (!input.trim()) {
-      alert('Veuillez entrer du texte');
+      alert(t('toolPages.hash.emptyAlert'));
       return;
     }
 
@@ -40,12 +42,12 @@ const HashGenerator = () => {
     <div className="min-h-screen bg-gray-50">
       <div className="container mx-auto px-4 py-8 max-w-4xl">
         <Link to="/tools" className="text-blue-600 hover:text-blue-700 mb-6 inline-flex items-center gap-2">
-          ← Retour aux outils
+          {t('common.backToTools')}
         </Link>
-        
+
         <div className="mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">🔐 Hash Generator</h1>
-          <p className="text-gray-600">Générez des hash SHA-1, SHA-256, SHA-384, SHA-512</p>
+          <h1 className="text-4xl font-bold text-gray-900 mb-2">{t('toolPages.hash.title')}</h1>
+          <p className="text-gray-600">{t('toolPages.hash.subtitle')}</p>
         </div>
 
         {quotaError && (
@@ -53,11 +55,11 @@ const HashGenerator = () => {
             <div className="flex items-start gap-3">
               <span className="text-2xl">⛔</span>
               <div className="flex-1">
-                <h3 className="font-semibold text-red-900 mb-1">Limite atteinte</h3>
+                <h3 className="font-semibold text-red-900 mb-1">{t('common.limitReached')}</h3>
                 <p className="text-sm text-red-800">{quotaError.message}</p>
                 {quotaError.type === 'NO_SUBSCRIPTION' && (
                   <Link to="/pricing" className="inline-block mt-2 text-sm font-semibold text-red-700 underline hover:text-red-600">
-                    Voir les plans disponibles →
+                    {t('common.viewPlans')}
                   </Link>
                 )}
               </div>
@@ -67,13 +69,13 @@ const HashGenerator = () => {
 
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-2">Texte à hasher</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">{t('toolPages.hash.inputLabel')}</label>
             <textarea
               value={input}
               onChange={(e) => setInput(e.target.value)}
               className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
               rows="4"
-              placeholder="Entrez votre texte..."
+              placeholder={t('toolPages.hash.inputPlaceholder')}
             />
           </div>
 
@@ -82,7 +84,7 @@ const HashGenerator = () => {
             disabled={isChecking}
             className="w-full bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white font-semibold py-3 px-6 rounded-lg transition-colors"
           >
-            {isChecking ? 'Vérification...' : 'Générer les hash'}
+            {isChecking ? t('common.verifying') : t('toolPages.hash.generateBtn')}
           </button>
         </div>
 
@@ -96,7 +98,7 @@ const HashGenerator = () => {
                     onClick={() => copyHash(hash)}
                     className="text-blue-600 hover:text-blue-700 text-sm"
                   >
-                    📋 Copier
+                    {t('common.copy')}
                   </button>
                 </div>
                 <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
@@ -108,9 +110,9 @@ const HashGenerator = () => {
         )}
 
         <div className="mt-6 bg-yellow-50 border border-yellow-200 rounded-xl p-6">
-          <h3 className="font-semibold text-yellow-900 mb-2">⚠️ Note de sécurité</h3>
+          <h3 className="font-semibold text-yellow-900 mb-2">{t('toolPages.hash.securityTitle')}</h3>
           <p className="text-sm text-yellow-800">
-            Les fonctions de hachage sont à sens unique et ne peuvent pas être inversées. SHA-1 est considéré comme obsolète pour la sécurité. Utilisez SHA-256 ou supérieur pour les applications critiques.
+            {t('toolPages.hash.securityNote')}
           </p>
         </div>
       </div>
